@@ -1,10 +1,13 @@
 (source gnu)
+(source marmalade)
 (source melpa)
 
 (depends-on "auto-complete")
 (depends-on "auto-install")
 (depends-on "bind-key")
 (depends-on "cask")
+(depends-on "color-theme")
+(depends-on "color-theme-molokai")
 (depends-on "dash")
 (depends-on "drag-stuff")
 (depends-on "exec-path-from-shell")
