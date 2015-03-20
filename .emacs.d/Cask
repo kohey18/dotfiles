@@ -2,6 +2,7 @@
 (source marmalade)
 (source melpa)
 
+(depends-on "ac-js2")
 (depends-on "auto-complete")
 (depends-on "auto-install")
 (depends-on "bind-key")
