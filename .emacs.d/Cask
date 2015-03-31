@@ -26,7 +26,7 @@
 (depends-on "nyan-mode")
 (depends-on "pallet")
 (depends-on "popwin")
-(depends-on "powerline" :git "https://github.com/milkypostman/powerline")
+(depends-on "powerline")
 (depends-on "prodigy")
 (depends-on "projectile")
 (depends-on "rubocop")
