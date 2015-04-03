@@ -8,7 +8,8 @@
 (setq backup-directory-alist
       (cons (cons ".*" (expand-file-name "~/.emacs.d/backup")) backup-directory-alist))
 ;; cask
-(require 'cask "~/.emacs.d/.cask/cask.el")
+;;(require 'cask "~/.emacs.d/.cask/cask.el")
+(require 'cask)
 (cask-initialize)
 (pallet-mode t)
 
