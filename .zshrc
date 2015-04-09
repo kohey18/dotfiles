@@ -116,16 +116,6 @@ alias ll='ls -al'
 alias s='/Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl'
 #bank_info
 alias kohey_bank='echo 銀行コード 0005 三菱東京ＵＦＪ銀行 支店コード 088 寝屋川支店 口座番号 0015040 口座名義 カワイコウヘイ'
-#camphor-サーバー
-alias camphor_server='ssh -p 1229 -l ~/.ssh/id_rsa.pub kohey@49.212.187.227'
-#peroli
-alias peroli='cd /Users/kohey/Documents/Dev/peroli/'
-#CAMPHOR-ディレクトリ
-alias camphor_files='cd /Users/kohey/Documents/Dev/CAMPHOR/'
-#admob案件
-alias admob='cd /Users/kohey/Documents/Dev/admob/'
-#w3のサーバに接続
-alias w3='ssh -i w3_rsa w3@172.20.69.120'
 # cdコマンド実行後、lsを実行する
 #function cd() {
  # builtin cd $@ && ls -al;
