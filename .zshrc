@@ -9,7 +9,7 @@ export LANG=ja_JP.UTF-8  # 文字コードをUTF-8に設定
 export KCODE=u           # KCODEにUTF-8を設定
 export AUTOFEATURE=true  # autotestでfeatureを動かす
 
-#bindkey -e               # キーバインドをemacsモードに設定
+bindkey -e               # キーバインドをemacsモードに設定
 #bindkey -v              # キーバインドをviモードに設定
 
 setopt no_beep           # ビープ音を鳴らさないようにする
@@ -49,6 +49,8 @@ zle -N history-beginning-search-backward-end history-search-end
 zle -N history-beginning-search-forward-end history-search-end
 bindkey "^P" history-beginning-search-backward-end
 bindkey "^N" history-beginning-search-forward-end
+
+#boot2docker
 
 # すべてのヒストリを表示する
 function history-all { history -E 1 }
@@ -116,10 +118,12 @@ alias ll='ls -al'
 alias s='/Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl'
 #bank_info
 alias kohey_bank='echo 銀行コード 0005 三菱東京ＵＦＪ銀行 支店コード 088 寝屋川支店 口座番号 0015040 口座名義 カワイコウヘイ'
+alias ds='echo -e "*やったこと* \\n*やること* \\n*課題* \\n*共有事項* \\n*出社しているかどうか*" | pbcopy'
+alias pr_format='echo -e "## 概要 \\n## 関連URL \\n## 技術・UI変更点 \\n## 完了の定義 \\n## 未完了タスク \\n## 備考 \\n## 今回保留した項目とTODOリスト \\n## レビュアー \\n" | pbcopy'
 # cdコマンド実行後、lsを実行する
-#function cd() {
- # builtin cd $@ && ls -al;
-#}
+function cd() {
+  builtin cd $@ && ls -al;
+}
 autoload -U colors; colors
 function rprompt-git-current-branch {
         local name st colors
@@ -157,3 +161,5 @@ eval "$(rbenv init -)"
 if [ -d ${HOME}/node_modules/.bin ]; then
     export PATH=${PATH}:${HOME}/node_modules/.bin
 fi
+export GOPATH=${HOME}/.golang
+export PATH=${PATH}:${GOROOT}/bin:${GOPATH}/bin
