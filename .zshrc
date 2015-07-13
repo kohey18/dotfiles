@@ -113,11 +113,11 @@ export PATH=/opt/local/lib/php:/usr/local/bin:/Users/kohey/.rbenv/bin:/opt/local
 ### Aliases ###
 alias r=rails
 alias v=vim
+alias be='bundle exec'
 alias e='emacs'
 alias ll='ls -al'
 alias s='/Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl'
 #bank_info
-alias kohey_bank='echo 銀行コード 0005 三菱東京ＵＦＪ銀行 支店コード 088 寝屋川支店 口座番号 0015040 口座名義 カワイコウヘイ'
 alias ds='echo -e "*やったこと* \\n*やること* \\n*課題* \\n*共有事項* \\n*出社しているかどうか*" | pbcopy'
 alias pr_format='echo -e "## 概要 \\n## 関連URL \\n## 技術・UI変更点 \\n## 完了の定義 \\n## 未完了タスク \\n## 備考 \\n## 今回保留した項目とTODOリスト \\n## レビュアー \\n" | pbcopy'
 # cdコマンド実行後、lsを実行する
@@ -149,6 +149,26 @@ function rprompt-git-current-branch {
         echo "%{$color%}$name%{$reset_color%} "
 }
 
+function peco-select-history() {
+    local tac
+    if which tac > /dev/null; then
+        tac="tac"
+    else
+        tac="tail -r"
+    fi
+    BUFFER=$(\history -n 1 | \
+                    eval $tac | \
+                    peco --query "$LBUFFER")
+    CURSOR=$#BUFFER
+    zle clear-screen
+}
+zle -N peco-select-history
+bindkey '^r' peco-select-history
+
+function pskill () {
+    ps aux | peco | awk '{print $2}' | xargs sudo kill -9
+}
+
 # プロンプトが表示されるたびにプロンプト文字列を評価、置換する
 setopt prompt_subst
 RPROMPT='[`rprompt-git-current-branch`%~]'
@@ -161,5 +181,7 @@ eval "$(rbenv init -)"
 if [ -d ${HOME}/node_modules/.bin ]; then
     export PATH=${PATH}:${HOME}/node_modules/.bin
 fi
+
 export GOPATH=${HOME}/.golang
 export PATH=${PATH}:${GOROOT}/bin:${GOPATH}/bin
+export PATH="/usr/local/sbin:$PATH"

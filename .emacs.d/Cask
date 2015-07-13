@@ -37,6 +37,8 @@
 (depends-on "ruby-end")
 (depends-on "ruby-mode")
 (depends-on "s")
+(depends-on "scss-mode")
+(depends-on "slim-mode")
 (depends-on "scala-mode2")
 (depends-on "smartparens")
 (depends-on "smex")
