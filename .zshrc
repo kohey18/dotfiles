@@ -94,13 +94,9 @@ SPROMPT=$tmp_sprompt  # スペル訂正用プロンプト
 ;
 
 ### Title (user@hostname) ###
-case "${TERM}" in
-kterm*|xterm*|)
-  precmd() {
+precmd() {
     echo -ne "\033]0;${USER}@${HOST%%.*}\007"
-  }
-  ;;
-esac
+}
 
 # ------------------------------
 # Other Settings# ------------------------------
@@ -109,7 +105,6 @@ case "${OSTYPE}" in  darwin*)
     export PATH=/usr/local/bin:/opt/local/lib/php:$PATH    export MANPATH=/opt/local/share/man:/opt/local/man:$MANPATH  ;;
 esac
 
-export PATH=/opt/local/lib/php:/usr/local/bin:/Users/kohey/.rbenv/bin:/opt/local/lib/php:/usr/bin:/bin:/usr/sbin:/sbin:/opt/chefdk/bin
 ### Aliases ###
 alias r=rails
 alias v=vim
@@ -175,7 +170,6 @@ RPROMPT='[`rprompt-git-current-branch`%~]'
 
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
-eval "$(rbenv init -)"
 
 ## nvm
 if [ -d ${HOME}/node_modules/.bin ]; then
