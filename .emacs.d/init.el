@@ -1,4 +1,4 @@
-(setq default-input-method "MacOSX")
+;;(setq default-input-method "MacOSX")
 (set-language-environment 'Japanese)
 (prefer-coding-system 'utf-8)
 
@@ -61,3 +61,10 @@
 
 (setq interprogram-cut-function 'paste-to-osx)
 (setq interprogram-paste-function 'copy-from-osx)
+(put 'upcase-region 'disabled nil)
+
+;; flymake
+(require 'flymake)
+;; undo-tree
+(require 'undo-tree)
+(global-undo-tree-mode)
