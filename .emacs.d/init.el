@@ -1,7 +1,6 @@
 (setq default-input-method "MacOSX")
 (set-language-environment 'Japanese)
 (prefer-coding-system 'utf-8)
-
 (package-initialize)
 (setq init-loader-show-log-after-init 'error-only)
 ;; backupファイル格納場所
@@ -70,3 +69,13 @@
 (global-undo-tree-mode)
 ;; neotree
 (require 'neotree)
+(global-set-key [f8] 'neotree-toggle)
+;; menu-barの削除
+(menu-bar-mode -1)
+;; 行番号の表示
+(global-linum-mode t)
+(setq linum-format "%3d ")
+(add-hook 'linum-mode-hook
+          '(lambda ()
+             (set-face-foreground 'linum "#FFFFFF")
+             (set-face-background 'linum "#000000")))
