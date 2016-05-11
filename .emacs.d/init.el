@@ -7,7 +7,7 @@
 (setq backup-directory-alist
       (cons (cons ".*" (expand-file-name "~/.emacs.d/backup")) backup-directory-alist))
 (setq auto-save-file-name-transforms
-      (cons (cons ".*" (expand-file-name "~/.emacs.d/backup")) backup-directory-alist))
+  `((".*", (expand-file-name "~/.emacs.d/backup/") t)))
 ;; cask
 ;;(require 'cask "~/.emacs.d/.cask/cask.el")
 (require 'cask)
