@@ -3,8 +3,10 @@
 (prefer-coding-system 'utf-8)
 (package-initialize)
 (setq init-loader-show-log-after-init 'error-only)
-;; backupファイル格納場所
+;; backup and auto-save-file
 (setq backup-directory-alist
+      (cons (cons ".*" (expand-file-name "~/.emacs.d/backup")) backup-directory-alist))
+(setq auto-save-file-name-transforms
       (cons (cons ".*" (expand-file-name "~/.emacs.d/backup")) backup-directory-alist))
 ;; cask
 ;;(require 'cask "~/.emacs.d/.cask/cask.el")
