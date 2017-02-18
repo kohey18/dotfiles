@@ -1,4 +1,4 @@
-# Created by newuser for 4.3.17
+# Created by kohey
 # (d) is default on
 
 # ------------------------------
@@ -110,10 +110,12 @@ alias r=rails
 alias v=vim
 alias be='bundle exec'
 alias e='emacs'
+alias emacs='emacsclient -nw -a ""'
+alias e_kill='emacsclient -e "(kill-emacs)"'
 alias ll='ls -al'
 alias s='/Applications/Sublime\ Text\ 2.app/Contents/SharedSupport/bin/subl'
 #bank_info
-alias ds='echo -e "*やったこと* \\n*やること* \\n*課題* \\n*共有事項* \\n*出社しているかどうか*" | pbcopy'
+alias ds='echo -e "【昨日したこと】\\n【今日すること】\\n【課題感】\\n【ひとこと】\\n" | pbcopy'
 alias pr_format='echo -e "## 概要 \\n## 関連URL \\n## 技術・UI変更点 \\n## 完了の定義 \\n## 未完了タスク \\n## 備考 \\n## 今回保留した項目とTODOリスト \\n## レビュアー \\n" | pbcopy'
 # cdコマンド実行後、lsを実行する
 function cd() {
@@ -179,3 +181,18 @@ fi
 export GOPATH=${HOME}/.golang
 export PATH=${PATH}:${GOROOT}/bin:${GOPATH}/bin
 export PATH="/usr/local/sbin:$PATH"
+export PATH="/usr/local/bin:$PATH"
+
+eval "$(direnv hook zsh)"  # zsh  の場合
+
+# rbenv
+export PATH="$HOME/.rbenv/bin:$PATH"
+eval "$(rbenv init -)"
+
+# ghc
+alias ghc='stack ghc --'
+alias ghci='stack ghci --'
+alias runhaskell='stack runhaskell --'
+
+# read secert setting
+source "${HOME}/.secret_zsh_setting"
