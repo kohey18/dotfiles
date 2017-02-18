@@ -3,3 +3,4 @@
 .cask
 *.dat
 .tmux/
+.secret_zsh_setting
