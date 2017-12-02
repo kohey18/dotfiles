@@ -43,6 +43,7 @@
 (depends-on "prodigy")
 (depends-on "projectile")
 (depends-on "rinari")
+(depends-on "rjsx-mode")
 (depends-on "robe")
 (depends-on "rubocop")
 (depends-on "ruby-block")
