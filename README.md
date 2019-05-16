@@ -2,14 +2,14 @@
 
 ```
 chsh -s /bin/zsh
-ln -s dotfiles/.zshrc .zshrc
+ln -s "`pwd`"/.zshrc ~/.zshrc
 source .zshrc
 ```
 
 ## emacs
 
 ```
-ln -s dotfiles/.emacs.d/ ~/.emacs.d
+ln -s "`pwd`"/.emacs.d/ ~/.emacs.d
 cd .emacs.d
 cask install
 ```
@@ -19,7 +19,8 @@ cask install
 
 ```
 brew install reattach-to-user-namespace
-ln -s dotfiles/.tmux.conf ~/.tmux.conf
+ln -s "`pwd`"/.tmux.conf ~/.tmux.conf
+cd
 mkdir .tmux
 cd .tmux
 git clone git@github.com:erikw/tmux-powerline.git
