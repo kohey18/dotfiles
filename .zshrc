@@ -173,11 +173,6 @@ RPROMPT='[`rprompt-git-current-branch`%~]'
 ### Added by the Heroku Toolbelt
 export PATH="/usr/local/heroku/bin:$PATH"
 
-## nvm
-if [ -d ${HOME}/node_modules/.bin ]; then
-    export PATH=${PATH}:${HOME}/node_modules/.bin
-fi
-
 export GOPATH=${HOME}/.golang
 export PATH=${PATH}:${GOROOT}/bin:${GOPATH}/bin
 export PATH="/usr/local/sbin:$PATH"
@@ -189,6 +184,9 @@ eval "$(direnv hook zsh)"  # zsh  の場合
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
 
+# nodebrew
+export PATH=$HOME/.nodebrew/current/bin:$PATH
+
 # ghc
 alias ghc='stack ghc --'
 alias ghci='stack ghci --'
@@ -196,3 +194,5 @@ alias runhaskell='stack runhaskell --'
 
 # read secert setting
 source "${HOME}/.secret_zsh_setting"
+export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
+export PATH="/usr/local/opt/imagemagick@6/bin:$PATH"

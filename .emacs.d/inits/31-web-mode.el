@@ -7,4 +7,5 @@
   (setq web-mode-html-offset   2)
   (setq web-mode-css-offset    2)
   (setq web-mode-script-offset 2)
+)
 (add-hook 'web-mode-hook 'web-mode-hook)

@@ -9,7 +9,6 @@
 (setq auto-save-file-name-transforms
   `((".*", (expand-file-name "~/.emacs.d/backup/") t)))
 ;; cask
-;;(require 'cask "~/.emacs.d/.cask/cask.el")
 (require 'cask)
 (cask-initialize)
 (pallet-mode t)
@@ -31,7 +30,12 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(inhibit-startup-screen t))
+ '(coffee-tab-width 2)
+ '(inhibit-startup-screen t)
+ '(package-selected-packages
+   (quote
+    (scala-mode ruby-block yaml-mode web-mode vue-mode use-package undo-tree terraform-mode smex smartparens slim-mode scss-mode ruby-end ruby-electric rubocop robe rjsx-mode rinari projectile prodigy powerline popwin pallet nyan-mode neotree multiple-cursors molokai-theme markdown-mode magit json-mode init-loader idle-highlight-mode htmlize helm-gtags helm-descbinds helm-ag haskell-mode flymake-ruby flycheck-cask expand-region exec-path-from-shell drag-stuff color-theme coffee-mode ac-php ac-js2)))
+ '(terraform-indent-level 2))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -49,6 +53,7 @@
 (set-face-foreground 'whitespace-space "yellow")
 (set-face-background 'whitespace-space "red")
 (set-face-underline  'whitespace-space t)
+(add-hook 'before-save-hook 'delete-trailing-whitespace)
 
 ;; click board
 (defun copy-from-osx ()
@@ -70,8 +75,8 @@
 (require 'undo-tree)
 (global-undo-tree-mode)
 ;; neotree
-(require 'neotree)
-(global-set-key [f8] 'neotree-toggle)
+;;(require 'neotree)
+;;global-set-key [f8] 'neotree-toggle)
 ;; menu-barの削除
 (menu-bar-mode -1)
 ;; 行番号の表示
