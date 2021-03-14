@@ -33,6 +33,7 @@ git clone git@github.com:erikw/tmux-powerline.git
 
 ```
 brew install fontforge
+brew tap sanemat/font
 brew install ricty --with-powerline
 cp -f /usr/local/opt/ricty/share/fonts/Ricty*.ttf ~/Library/Fonts/
 fc-cache -vf
