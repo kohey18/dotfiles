@@ -42,3 +42,12 @@ fc-cache -vf
 #### `iTerm` -> `Preferences`
 
 ![](https://gyazo.com/c2ed34eda3d12e4b5a1ea93b0b471955.png)
+
+## Claude Code
+
+```
+brew install jq
+mkdir -p ~/.claude
+ln -s "`pwd`"/.claude/settings.json ~/.claude/settings.json
+ln -s "`pwd`"/.claude/statusline.sh ~/.claude/statusline.sh
+```
