@@ -100,9 +100,16 @@ precmd() {
 
 # ------------------------------
 # Other Settings# ------------------------------
-### Macports ###
-case "${OSTYPE}" in  darwin*)
-    export PATH=/usr/local/bin:/opt/local/lib/php:$PATH    export MANPATH=/opt/local/share/man:/opt/local/man:$MANPATH  ;;
+### Homebrew ###
+case "${OSTYPE}" in
+  darwin*)
+    # Apple Silicon は /opt/homebrew、Intel は /usr/local
+    if [ -x /opt/homebrew/bin/brew ]; then
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    elif [ -x /usr/local/bin/brew ]; then
+      eval "$(/usr/local/bin/brew shellenv)"
+    fi
+    ;;
 esac
 
 ### Aliases ###
@@ -160,7 +167,10 @@ function peco-select-history() {
     zle clear-screen
 }
 zle -N peco-select-history
-bindkey '^r' peco-select-history
+# peco が無い間は標準の履歴検索を残す
+if command -v peco > /dev/null; then
+  bindkey '^r' peco-select-history
+fi
 
 function pskill () {
     ps aux | peco | awk '{print $2}' | xargs sudo kill -9
@@ -170,19 +180,19 @@ function pskill () {
 setopt prompt_subst
 RPROMPT='[`rprompt-git-current-branch`%~]'
 
-### Added by the Heroku Toolbelt
-export PATH="/usr/local/heroku/bin:$PATH"
-
 export GOPATH=${HOME}/.golang
 export PATH=${PATH}:${GOROOT}/bin:${GOPATH}/bin
-export PATH="/usr/local/sbin:$PATH"
-export PATH="/usr/local/bin:$PATH"
 
-eval "$(direnv hook zsh)"  # zsh  の場合
+# direnv (未インストールでもエラーにしない)
+if command -v direnv > /dev/null; then
+  eval "$(direnv hook zsh)"
+fi
 
-# rbenv
+# rbenv (未インストールでもエラーにしない)
 export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
+if command -v rbenv > /dev/null; then
+  eval "$(rbenv init -)"
+fi
 
 # nodebrew
 export PATH=$HOME/.nodebrew/current/bin:$PATH
@@ -192,7 +202,14 @@ alias ghc='stack ghc --'
 alias ghci='stack ghci --'
 alias runhaskell='stack runhaskell --'
 
-# read secert setting
-source "${HOME}/.secret_zsh_setting"
-export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
-export PATH="/usr/local/opt/imagemagick@6/bin:$PATH"
+# read secert setting (無ければ読み飛ばす)
+if [ -f "${HOME}/.secret_zsh_setting" ]; then
+  source "${HOME}/.secret_zsh_setting"
+fi
+
+BREW_PREFIX="${HOMEBREW_PREFIX:-/opt/homebrew}"
+export PATH="${BREW_PREFIX}/opt/mysql@5.7/bin:$PATH"
+export PATH="${BREW_PREFIX}/opt/imagemagick@6/bin:$PATH"
+
+# Claude Code など ~/.local/bin にインストールされるツール
+export PATH="$HOME/.local/bin:$PATH"
