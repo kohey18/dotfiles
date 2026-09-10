@@ -178,11 +178,11 @@ export PATH=${PATH}:${GOROOT}/bin:${GOPATH}/bin
 export PATH="/usr/local/sbin:$PATH"
 export PATH="/usr/local/bin:$PATH"
 
-eval "$(direnv hook zsh)"  # zsh  の場合
+# eval "$(direnv hook zsh)"  # zsh  の場合
 
 # rbenv
 export PATH="$HOME/.rbenv/bin:$PATH"
-eval "$(rbenv init -)"
+command -v rbenv >/dev/null && eval "$(rbenv init -)"
 
 # nodebrew
 export PATH=$HOME/.nodebrew/current/bin:$PATH
@@ -192,7 +192,37 @@ alias ghc='stack ghc --'
 alias ghci='stack ghci --'
 alias runhaskell='stack runhaskell --'
 
-# read secert setting
-source "${HOME}/.secret_zsh_setting"
+# read secret setting (存在する場合だけ読む。.gitignore 対象)
+[ -f "${HOME}/.secret_zsh_setting" ] && source "${HOME}/.secret_zsh_setting"
+
+# Homebrew (Apple Silicon)
+export PATH="/opt/homebrew/bin:$PATH"
+export PATH="$(brew --prefix openssl)/bin:$PATH"
+export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl)"
+
+# mysql / imagemagick
 export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
-export PATH="/usr/local/opt/imagemagick@6/bin:$PATH"
+export PATH="/opt/homebrew/opt/imagemagick@6/bin:$PATH"
+export PKG_CONFIG_PATH=/opt/ImageMagick/lib/pkgconfig
+
+# volta
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
+
+# pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+command -v pyenv >/dev/null && eval "$(pyenv init -)"
+
+# asdf
+[ -f /opt/homebrew/opt/asdf/libexec/asdf.sh ] && . /opt/homebrew/opt/asdf/libexec/asdf.sh
+
+# Antigravity
+export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+
+# claude / codex / herdr など
+export PATH="$HOME/.local/bin:$PATH"
+
+# Google Cloud SDK (入っている場合だけ)
+if [ -f "$HOME/Downloads/google-cloud-sdk/path.zsh.inc" ]; then . "$HOME/Downloads/google-cloud-sdk/path.zsh.inc"; fi
+if [ -f "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc" ]; then . "$HOME/Downloads/google-cloud-sdk/completion.zsh.inc"; fi

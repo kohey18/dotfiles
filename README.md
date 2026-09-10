@@ -26,7 +26,7 @@ chsh -s "$(command -v zsh)"
 1. Homebrew が無ければインストールし、`brew shellenv` を `~/.zprofile` に追記
 2. `brew bundle` で [Brewfile](Brewfile) のパッケージを一括インストール
    - zsh / tmux / reattach-to-user-namespace / jq / asdf / emacs / cask / herdr / git / xcodegen
-   - `.zshrc` が使う direnv / rbenv / pyenv / peco
+   - `.zshrc` が使う rbenv / pyenv / volta / peco
    - `ghostty`（ターミナル）
    - `font-udev-gothic-nf`（ghostty / tmux / emacs で使う Nerd Font）
    - `claude-code`（Claude Code CLI）

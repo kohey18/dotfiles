@@ -10,9 +10,9 @@ brew "cask"          # emacs のパッケージ管理 (.emacs.d/Cask)
 brew "herdr"
 brew "xcodegen"      # kanatan / editan のビルドに必要
 # .zshrc が起動時に使うもの
-brew "direnv"
 brew "rbenv"
 brew "pyenv"
+brew "volta"
 brew "peco"
 
 cask "ghostty"
