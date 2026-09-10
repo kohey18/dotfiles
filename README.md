@@ -43,6 +43,14 @@ fc-cache -vf
 
 ![](https://gyazo.com/c2ed34eda3d12e4b5a1ea93b0b471955.png)
 
+## herdr
+
+```
+mkdir -p ~/.config/herdr
+ln -s "`pwd`"/.config/herdr/config.toml ~/.config/herdr/config.toml
+herdr server reload-config
+```
+
 ## Claude Code
 
 ```

@@ -1,0 +1,8 @@
+onboarding = false
+
+[keys]
+# tmux (.tmux.conf) と同じ分割キー
+split_vertical = ["prefix+v", "prefix+ctrl+v"]     # 左右分割
+split_horizontal = ["prefix+s", "prefix+ctrl+s"]   # 上下分割
+# prefix+s はデフォルトで settings に割り当てられているため退避
+settings = "prefix+shift+s"
