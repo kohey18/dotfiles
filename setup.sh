@@ -60,8 +60,6 @@ link .config/herdr/config.toml  "${HOME_DIR}/.config/herdr/config.toml"
 link .config/ghostty/config     "${HOME_DIR}/.config/ghostty/config"
 link .claude/settings.json      "${HOME_DIR}/.claude/settings.json"
 link .claude/statusline.sh      "${HOME_DIR}/.claude/statusline.sh"
-link .config/karabiner/karabiner.json "${HOME_DIR}/.config/karabiner/karabiner.json"
-link bin/ghostty-paste.sh       "${HOME_DIR}/.local/bin/ghostty-paste.sh"
 
 # ---- tmux-powerline --------------------------------------------------------
 if [ ! -d "${HOME_DIR}/.tmux/tmux-powerline" ]; then

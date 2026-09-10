@@ -17,7 +17,6 @@ brew "peco"
 
 cask "ghostty"
 cask "font-udev-gothic-nf"
-cask "karabiner-elements"   # Ghostty で cmd+v の画像ペーストを ctrl+v に変換する
 cask "claude-code"   # Claude Code CLI
 cask "codex"         # OpenAI Codex CLI
 

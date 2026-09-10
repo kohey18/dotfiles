@@ -43,8 +43,6 @@ chsh -s "$(command -v zsh)"
    | `.config/ghostty/config` | `~/.config/ghostty/config` |
    | `.claude/settings.json` | `~/.claude/settings.json` |
    | `.claude/statusline.sh` | `~/.claude/statusline.sh` |
-   | `.config/karabiner/karabiner.json` | `~/.config/karabiner/karabiner.json` |
-   | `bin/ghostty-paste.sh` | `~/.local/bin/ghostty-paste.sh` |
 
 4. `~/.tmux/tmux-powerline` を clone
 5. `cask install` で emacs パッケージをインストール
@@ -58,7 +56,6 @@ chsh -s "$(command -v zsh)"
 
 - `claude` と `codex` でログイン
 - Kanatan を起動してアクセシビリティ権限を許可
-- Karabiner-Elements を起動し、求められる権限（入力監視、Driver Extension の許可）を与える。cmd+v の画像ペースト変換に使う
 
 ## 各ツールのメモ
 
@@ -74,8 +71,6 @@ tmux と同じキーに合わせてある（`prefix+v` 左右分割 / `prefix+s`
 ### ghostty
 
 フォントは `UDEV Gothic NF`（Brewfile の `font-udev-gothic-nf`）。設定変更は ghostty 上で `Cmd+Shift+,` で再読み込み。
-
-**cmd+v での画像ペースト**: Claude Code と Codex はクリップボードの画像を `ctrl+v` で読み込む（ターミナルの `cmd+v` はテキストしか渡せない）。Karabiner-Elements のルール（`.config/karabiner/karabiner.json`）で、Ghostty が前面のときの `cmd+v` を `bin/ghostty-paste.sh` に渡し、クリップボードが画像なら `ctrl+v`、テキストなら `ctrl+cmd+v`（Ghostty 側で通常ペーストに割り当て）へ変換している。herdr 内でも同じ。Karabiner が無い環境では従来どおり `ctrl+v` で画像を貼れる。
 
 ### emacs
 
