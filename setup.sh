@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 # dotfiles 一発セットアップ
-#   ./setup.sh            : Homebrew パッケージのインストール + シンボリックリンク作成
-#   SKIP_BREW=1 ./setup.sh: シンボリックリンク作成のみ
+#   ./setup.sh              : Homebrew パッケージ + シンボリックリンク + 自作アプリのビルド
+#   SKIP_BREW=1 ./setup.sh  : Homebrew の手順を飛ばす
+#   SKIP_APPS=1 ./setup.sh  : kanatan / editan のビルドを飛ばす
+#   REBUILD_APPS=1 ./setup.sh : /Applications にあっても kanatan / editan を再ビルド
 # 何度実行しても同じ結果になる（既存ファイルは *.bak に退避）
 set -euo pipefail
 
@@ -61,10 +63,47 @@ if command -v cask >/dev/null 2>&1; then
   (cd "${DOTFILES}/.emacs.d" && cask install)
 fi
 
-# ---- reload running tools --------------------------------------------------
-if command -v herdr >/dev/null 2>&1 && herdr status server >/dev/null 2>&1; then
-  log "herdr server reload-config"
-  herdr server reload-config >/dev/null || true
+# ---- herdr integrations (Claude Code / Codex の状態をサイドバーに出す) --------
+if command -v herdr >/dev/null 2>&1; then
+  for agent in claude codex; do
+    if command -v "${agent}" >/dev/null 2>&1; then
+      log "herdr integration install ${agent}"
+      herdr integration install "${agent}" >/dev/null || true
+    fi
+  done
+  if herdr status server >/dev/null 2>&1; then
+    log "herdr server reload-config"
+    herdr server reload-config >/dev/null || true
+  fi
+fi
+
+# ---- 自作 macOS アプリ (kanatan / editan) をソースからビルドしてインストール ----
+# install_app <github repo> <install script (repo 相対)> <App 名>
+# clone 先は dotfiles と同じ親ディレクトリ (例: ~/Documents/dev/kohey18/kanatan)
+install_app() {
+  local repo="$1" script="$2" app="$3"
+  local dir="$(dirname "${DOTFILES}")/${repo##*/}"
+  if [ -d "/Applications/${app}.app" ] && [ "${REBUILD_APPS:-0}" != "1" ]; then
+    log "ok      /Applications/${app}.app (REBUILD_APPS=1 で再ビルド)"
+    return
+  fi
+  if [ ! -d "${dir}" ]; then
+    log "Cloning ${repo}"
+    git clone "https://github.com/${repo}.git" "${dir}"
+  else
+    (cd "${dir}" && git pull --ff-only) || true
+  fi
+  log "Building ${app} (${dir}/${script})"
+  (cd "${dir}" && "./${script}")
+}
+
+if [ "${SKIP_APPS:-0}" != "1" ]; then
+  if xcodebuild -version >/dev/null 2>&1 && command -v xcodegen >/dev/null 2>&1; then
+    install_app kohey18/kanatan scripts/install.sh Kanatan
+    install_app kohey18/editan  Scripts/install.sh Editan
+  else
+    log "skip    kanatan / editan: Xcode (App Store) と xcodegen が必要です。導入後に再実行してください"
+  fi
 fi
 
 log "done. login shell を zsh にするには: chsh -s \"\$(command -v zsh)\""
