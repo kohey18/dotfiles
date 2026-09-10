@@ -1,2 +1,6 @@
 font-family = "UDEV Gothic NF"
 font-size = 14
+# cmd+v は Karabiner-Elements 経由で bin/ghostty-paste.sh に渡し、
+# クリップボードが画像なら ctrl+v、テキストなら ctrl+cmd+v に変換される。
+# その受け口として ctrl+cmd+v を通常のテキストペーストにしておく。
+keybind = ctrl+super+v=paste_from_clipboard
