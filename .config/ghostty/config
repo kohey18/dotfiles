@@ -1,2 +1,5 @@
 font-family = "UDEV Gothic NF"
 font-size = 14
+# Claude Code / Codex はクリップボードの画像を ctrl+v で読む。
+# cmd+v はテキスト専用（端末が画像を渡せない）ので、cmd+shift+v を ctrl+v の別名にする。
+keybind = super+shift+v=text:\x16

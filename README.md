@@ -72,6 +72,8 @@ tmux と同じキーに合わせてある（`prefix+v` 左右分割 / `prefix+s`
 
 フォントは `UDEV Gothic NF`（Brewfile の `font-udev-gothic-nf`）。設定変更は ghostty 上で `Cmd+Shift+,` で再読み込み。
 
+**画像ペースト**: Claude Code と Codex はクリップボードの画像を `ctrl+v` で読み込む（`cmd+v` は端末がテキストしか渡せない）。`cmd+shift+v` を `ctrl+v` の別名にしてあるので、cmd 系でも貼れる。herdr 内でも同じ。
+
 ### emacs
 
 パッケージは `.emacs.d/Cask` で管理。追加したら `cd .emacs.d && cask install`。
