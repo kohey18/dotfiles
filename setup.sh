@@ -28,6 +28,10 @@ BREW_BIN="$(command -v brew || echo /opt/homebrew/bin/brew)"
 SHELLENV_LINE="eval \"\$(${BREW_BIN} shellenv)\""
 if ! grep -qsF "${SHELLENV_LINE}" "${HOME_DIR}/.zprofile"; then
   log "append  brew shellenv -> ${HOME_DIR}/.zprofile"
+  # 既存ファイルの末尾に改行が無いと前の行と連結されるので先に補う
+  if [ -s "${HOME_DIR}/.zprofile" ] && [ "$(tail -c 1 "${HOME_DIR}/.zprofile")" != "" ]; then
+    printf '\n' >> "${HOME_DIR}/.zprofile"
+  fi
   printf '%s\n' "${SHELLENV_LINE}" >> "${HOME_DIR}/.zprofile"
 fi
 
@@ -84,12 +88,17 @@ if command -v herdr >/dev/null 2>&1; then
   SETTINGS="${HOME_DIR}/.claude/settings.json"
   if command -v jq >/dev/null 2>&1 && [ -f "${SETTINGS}" ]; then
     tmp="$(mktemp)"
+    # 各エントリ内の hooks を個別に見て、herdr hook のうち別 home を指すものだけ落とす。
+    # hooks が空になったエントリは丸ごと削除する。
     jq --arg home "${HOME_DIR}" '
-      if .hooks.SessionStart then
-        .hooks.SessionStart |= map(select(
-          (.hooks[0].command | test("herdr-agent-state") | not)
-          or (.hooks[0].command | contains($home + "/"))
-        ))
+      if (.hooks.SessionStart | type) == "array" then
+        .hooks.SessionStart |= (
+          map(.hooks |= map(select(
+            ((.command // "") | test("herdr-agent-state") | not)
+            or ((.command // "") | contains($home + "/"))
+          )))
+          | map(select((.hooks | length) > 0))
+        )
       else . end' "${SETTINGS}" > "${tmp}"
     if ! cmp -s "${tmp}" "${SETTINGS}"; then
       log "prune   stale herdr hook entries in ${SETTINGS}"
@@ -121,7 +130,7 @@ install_app() {
   fi
   log "Building ${app} (${dir}/${script})"
   if ! (cd "${dir}" && "./${script}"); then
-    log "FAILED  ${app}: ビルドに失敗しました。Kanatan は Apple Development 署名を使うので Xcode に Apple ID を登録してから REBUILD_APPS=1 で再実行してください"
+    log "FAILED  ${app}: ビルドに失敗しました。Kanatan は開発チーム 3U5Y9G26T3 の Apple Development 署名でビルドするため、そのチームに属する Apple ID を Xcode に登録し証明書を取得してから REBUILD_APPS=1 で再実行してください"
     FAILED_APPS="${FAILED_APPS:-} ${app}"
   fi
 }

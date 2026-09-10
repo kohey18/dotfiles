@@ -19,7 +19,7 @@ chsh -s "$(command -v zsh)"
 事前に必要なもの:
 
 - Xcode（App Store から。kanatan / editan のビルドに使う）
-- Kanatan は Apple Development 署名でビルドするので、Xcode の Settings → Accounts に Apple ID を登録しておく。未登録だと Kanatan だけ失敗し、他は続行する
+- Kanatan は開発チーム `3U5Y9G26T3` の Apple Development 署名でビルドするので、そのチームに属する Apple ID を Xcode の Settings → Accounts に登録し、署名証明書を取得しておく。満たしていないと Kanatan だけ失敗し、他は続行する（setup.sh は最後に exit 1 を返す）
 
 ## setup.sh がやること
 
