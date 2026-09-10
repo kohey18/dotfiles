@@ -23,6 +23,14 @@ if [ "${SKIP_BREW:-0}" != "1" ]; then
   brew bundle --file="${DOTFILES}/Brewfile"
 fi
 
+# Apple Silicon では /opt/homebrew/bin が PATH に無いので ~/.zprofile で通す
+BREW_BIN="$(command -v brew || echo /opt/homebrew/bin/brew)"
+SHELLENV_LINE="eval \"\$(${BREW_BIN} shellenv)\""
+if ! grep -qsF "${SHELLENV_LINE}" "${HOME_DIR}/.zprofile"; then
+  log "append  brew shellenv -> ${HOME_DIR}/.zprofile"
+  printf '%s\n' "${SHELLENV_LINE}" >> "${HOME_DIR}/.zprofile"
+fi
+
 # ---- symlinks --------------------------------------------------------------
 # link <repo-relative-path> <target-absolute-path>
 link() {
@@ -71,6 +79,24 @@ if command -v herdr >/dev/null 2>&1; then
       herdr integration install "${agent}" >/dev/null || true
     fi
   done
+  # settings.json の herdr hook は絶対パスで書かれるため、別ユーザー名のマシンでは
+  # 古い /Users/<name>/ 向けエントリが残る。実在しないパスのものを取り除く。
+  SETTINGS="${HOME_DIR}/.claude/settings.json"
+  if command -v jq >/dev/null 2>&1 && [ -f "${SETTINGS}" ]; then
+    tmp="$(mktemp)"
+    jq --arg home "${HOME_DIR}" '
+      if .hooks.SessionStart then
+        .hooks.SessionStart |= map(select(
+          (.hooks[0].command | test("herdr-agent-state") | not)
+          or (.hooks[0].command | contains($home + "/"))
+        ))
+      else . end' "${SETTINGS}" > "${tmp}"
+    if ! cmp -s "${tmp}" "${SETTINGS}"; then
+      log "prune   stale herdr hook entries in ${SETTINGS}"
+      cat "${tmp}" > "${SETTINGS}"
+    fi
+    rm -f "${tmp}"
+  fi
   if herdr status server >/dev/null 2>&1; then
     log "herdr server reload-config"
     herdr server reload-config >/dev/null || true
@@ -94,7 +120,10 @@ install_app() {
     (cd "${dir}" && git pull --ff-only) || true
   fi
   log "Building ${app} (${dir}/${script})"
-  (cd "${dir}" && "./${script}")
+  if ! (cd "${dir}" && "./${script}"); then
+    log "FAILED  ${app}: ビルドに失敗しました。Kanatan は Apple Development 署名を使うので Xcode に Apple ID を登録してから REBUILD_APPS=1 で再実行してください"
+    FAILED_APPS="${FAILED_APPS:-} ${app}"
+  fi
 }
 
 if [ "${SKIP_APPS:-0}" != "1" ]; then
@@ -106,4 +135,8 @@ if [ "${SKIP_APPS:-0}" != "1" ]; then
   fi
 fi
 
+if [ -n "${FAILED_APPS:-}" ]; then
+  log "done (ビルド失敗:${FAILED_APPS}). login shell を zsh にするには: chsh -s \"\$(command -v zsh)\""
+  exit 1
+fi
 log "done. login shell を zsh にするには: chsh -s \"\$(command -v zsh)\""

@@ -12,17 +12,21 @@ chsh -s "$(command -v zsh)"
 `setup.sh` は何度実行しても安全（既存ファイルは `*.bak` に退避してからリンクを張る）。
 オプション:
 
-- `SKIP_BREW=1 ./setup.sh` … Homebrew の手順を飛ばしてリンクだけ張り直す
+- `SKIP_BREW=1 ./setup.sh` … Homebrew のインストールと `brew bundle` だけを飛ばす（リンク・clone・ビルドは実行する）
 - `SKIP_APPS=1 ./setup.sh` … kanatan / editan のビルドを飛ばす
 - `REBUILD_APPS=1 ./setup.sh` … kanatan / editan を再ビルドして入れ直す
 
-事前に必要なもの: Xcode（App Store から。kanatan / editan のビルドに使う）。
+事前に必要なもの:
+
+- Xcode（App Store から。kanatan / editan のビルドに使う）
+- Kanatan は Apple Development 署名でビルドするので、Xcode の Settings → Accounts に Apple ID を登録しておく。未登録だと Kanatan だけ失敗し、他は続行する
 
 ## setup.sh がやること
 
-1. Homebrew が無ければインストール
+1. Homebrew が無ければインストールし、`brew shellenv` を `~/.zprofile` に追記
 2. `brew bundle` で [Brewfile](Brewfile) のパッケージを一括インストール
    - zsh / tmux / reattach-to-user-namespace / jq / asdf / emacs / cask / herdr / git / xcodegen
+   - `.zshrc` が使う direnv / rbenv / pyenv / peco
    - `ghostty`（ターミナル）
    - `font-udev-gothic-nf`（ghostty / tmux / emacs で使う Nerd Font）
    - `claude-code`（Claude Code CLI）
@@ -60,7 +64,7 @@ chsh -s "$(command -v zsh)"
 
 ### herdr
 
-tmux と同じキーに合わせてある（`prefix+v` 左右分割 / `prefix+s` 上下分割）。
+tmux と同じキーに合わせてある（`prefix+v` 左右分割 / `prefix+s` 上下分割）。`prefix+n` で新しい space（workspace）を作る。次のタブは `prefix+shift+n`。
 設定を変えたら `herdr server reload-config`。
 
 ### ghostty
