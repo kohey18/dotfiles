@@ -66,6 +66,7 @@ chsh -s "$(command -v zsh)"
 ### herdr
 
 tmux と同じキーに合わせてある（`prefix+v` 左右分割 / `prefix+s` 上下分割）。`prefix+n` で新しい space（workspace）を作る。次のタブは `prefix+shift+n`。
+ペイン内のリンク（OSC 8 リンクや `https://` の文字列）は **ctrl+クリック** でブラウザが開く。herdr がマウスを掴んでいる間は cmd の情報が届かないため cmd+クリックは使えない（shift+cmd+クリックなら端末側の処理に素通しできる）。
 設定を変えたら `herdr server reload-config`。
 
 ### ghostty
