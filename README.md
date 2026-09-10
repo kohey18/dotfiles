@@ -47,7 +47,8 @@ chsh -s "$(command -v zsh)"
 4. `~/.tmux/tmux-powerline` を clone
 5. `cask install` で emacs パッケージをインストール
 6. `herdr integration install claude` / `codex` で herdr のエージェント連携を有効化し、サーバーが起動していれば `herdr server reload-config`
-7. 自作 macOS アプリをソースからビルドして `/Applications` にインストール（dotfiles と同じ親ディレクトリに clone）
+7. Codex の `~/.codex/config.toml` に `[tui] status_line`（[.codex/tui.toml](.codex/tui.toml)）が無ければ追記
+8. 自作 macOS アプリをソースからビルドして `/Applications` にインストール（dotfiles と同じ親ディレクトリに clone）
    - [kanatan](https://github.com/kohey18/kanatan) … 左⌘で英数 / 右⌘でかな
    - [editan](https://github.com/kohey18/editan) … ステージング用エディタ
 
@@ -78,4 +79,4 @@ tmux と同じキーに合わせてある（`prefix+v` 左右分割 / `prefix+s`
 ### Claude Code / Codex
 
 `.claude/settings.json` と `statusline.sh`（`jq` が必要）。settings.json の `hooks` は herdr の連携用で、`herdr integration install claude` が管理する。
-Codex の `~/.codex/config.toml` はプロジェクトの trust 設定などマシン固有の内容が多いので dotfiles では管理しない。
+Codex の `~/.codex/config.toml` はプロジェクトの trust 設定などマシン固有の内容が多いので丸ごとは管理せず、下部ステータスライン（モデル / コンテキスト使用率 / 5h・週次の残量 / 使用トークン / ブランチ）の `[tui] status_line` だけを `.codex/tui.toml` から追記する。項目名の一覧は同ファイルのコメントを参照。

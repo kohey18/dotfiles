@@ -112,6 +112,21 @@ if command -v herdr >/dev/null 2>&1; then
   fi
 fi
 
+# ---- Codex のステータスライン --------------------------------------------------
+# ~/.codex/config.toml はプロジェクトの trust 設定などマシン固有の内容を含むので
+# 丸ごとは管理せず、[tui] status_line が無いときだけ .codex/tui.toml を追記する。
+CODEX_CONFIG="${HOME_DIR}/.codex/config.toml"
+if grep -qs "^status_line" "${CODEX_CONFIG}"; then
+  log "ok      ${CODEX_CONFIG} (status_line)"
+else
+  log "append  codex status_line -> ${CODEX_CONFIG}"
+  mkdir -p "$(dirname "${CODEX_CONFIG}")"
+  if [ -s "${CODEX_CONFIG}" ] && [ "$(tail -c 1 "${CODEX_CONFIG}")" != "" ]; then
+    printf '\n' >> "${CODEX_CONFIG}"
+  fi
+  { printf '\n'; grep -v '^#' "${DOTFILES}/.codex/tui.toml"; } >> "${CODEX_CONFIG}"
+fi
+
 # ---- 自作 macOS アプリ (kanatan / editan) をソースからビルドしてインストール ----
 # install_app <github repo> <install script (repo 相対)> <App 名>
 # clone 先は dotfiles と同じ親ディレクトリ (例: ~/Documents/dev/kohey18/kanatan)
