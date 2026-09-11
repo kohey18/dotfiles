@@ -1,85 +1,91 @@
-## zshrc
+# dotfiles
+
+macOS 用の設定ファイル一式。新しいマシンでは以下だけで全部セットアップできる。
 
 ```
-brew install zsh
-chsh -s /bin/zsh
-ln -s "`pwd`"/.zshrc ~/.zshrc
-source .zshrc
+git clone git@github.com:kohey18/dotfiles.git ~/Documents/dev/kohey18/dotfiles
+cd ~/Documents/dev/kohey18/dotfiles
+./setup.sh
+chsh -s "$(command -v zsh)"
 ```
 
-## emacs
+`setup.sh` は何度実行しても安全（既存ファイルは `*.bak` に退避してからリンクを張る）。
+オプション:
 
-```
-brew install cask
-ln -s "`pwd`"/.emacs.d/ ~/.emacs.d
-cd .emacs.d
-cask install
-```
+- `SKIP_BREW=1 ./setup.sh` … Homebrew のインストールと `brew bundle` だけを飛ばす（リンク・clone・ビルドは実行する）
+- `SKIP_APPS=1 ./setup.sh` … kanatan / editan のビルドを飛ばす
+- `REBUILD_APPS=1 ./setup.sh` … kanatan / editan を再ビルドして入れ直す
 
+事前に必要なもの:
 
-## tmux
+- Xcode（App Store から。kanatan / editan のビルドに使う）
+- Kanatan は開発チーム `3U5Y9G26T3` の Apple Development 署名でビルドするので、そのチームに属する Apple ID を Xcode の Settings → Accounts に登録し、署名証明書を取得しておく。満たしていないと Kanatan だけ失敗し、他は続行する（setup.sh は最後に exit 1 を返す）
 
-```
-brew install tmux
-brew install reattach-to-user-namespace
-ln -s "`pwd`"/.tmux.conf ~/.tmux.conf
-cd
-mkdir .tmux
-cd .tmux
-git clone git@github.com:erikw/tmux-powerline.git
-```
+## setup.sh がやること
 
-### Powerline Setting(tmux & emacs)
+1. Homebrew が無ければインストールし、`brew shellenv` を `~/.zprofile` に追記
+2. `brew bundle` で [Brewfile](Brewfile) のパッケージを一括インストール
+   - zsh / tmux / reattach-to-user-namespace / jq / asdf / emacs / cask / herdr / git / xcodegen
+   - `.zshrc` が使う rbenv / pyenv / volta / peco
+   - `ghostty`（ターミナル）
+   - `font-udev-gothic-nf`（ghostty / tmux / emacs で使う Nerd Font）
+   - `claude-code`（Claude Code CLI）
+   - `codex`（OpenAI Codex CLI）
+   - GUI アプリ: Cursor / VS Code / TablePlus / Alfred / Postman / ChatGPT / Claude
+3. 以下のシンボリックリンクを作成
 
-```
-brew install fontforge
-brew tap sanemat/font
-brew install ricty --with-powerline
-cp -f /usr/local/opt/ricty/share/fonts/Ricty*.ttf ~/Library/Fonts/
-fc-cache -vf
-```
+   | リポジトリ | リンク先 |
+   |---|---|
+   | `.zshrc` | `~/.zshrc` |
+   | `.tmux.conf` | `~/.tmux.conf` |
+   | `.emacs.d/` | `~/.emacs.d` |
+   | `.config/herdr/config.toml` | `~/.config/herdr/config.toml` |
+   | `.config/ghostty/config` | `~/.config/ghostty/config` |
+   | `.claude/settings.json` | `~/.claude/settings.json` |
+   | `.claude/statusline.sh` | `~/.claude/statusline.sh` |
+   | `.codex/rules/default.rules` | `~/.codex/rules/default.rules` |
 
-#### `iTerm` -> `Preferences`
+4. `~/.tmux/tmux-powerline` を clone
+5. `cask install` で emacs パッケージをインストール
+6. `herdr integration install claude` / `codex` で herdr のエージェント連携を有効化し、サーバーが起動していれば `herdr server reload-config`
+7. Codex の `~/.codex/config.toml` が無ければ [.codex/config.toml](.codex/config.toml) をコピーし、`[tui] status_line`（[.codex/tui.toml](.codex/tui.toml)）が無ければ追記
+8. 自作 macOS アプリをソースからビルドして `/Applications` にインストール（dotfiles と同じ親ディレクトリに clone）
+   - [kanatan](https://github.com/kohey18/kanatan) … 左⌘で英数 / 右⌘でかな
+   - [editan](https://github.com/kohey18/editan) … ステージング用エディタ
 
-![](https://gyazo.com/c2ed34eda3d12e4b5a1ea93b0b471955.png)
+初回ログイン後に手動でやること:
 
-## Ghostty
+- `claude` と `codex` でログイン
+- Kanatan を起動してアクセシビリティ権限を許可
 
-```
-brew install --cask ghostty
-mkdir -p ~/.config/ghostty
-ln -s "`pwd`"/.config/ghostty/config ~/.config/ghostty/config
-```
+## 各ツールのメモ
 
-macOS では `~/Library/Application Support/com.mitchellh.ghostty/config` も読み込まれる(こちらが優先)。
-自動生成されたテンプレートが残っている場合は二重に読まれるので削除しておく。
+### tmux
 
-```
-rm -f ~/Library/Application\ Support/com.mitchellh.ghostty/config
-```
+プレフィックスはデフォルトの `Ctrl-b`。`prefix+v` で左右分割、`prefix+s` で上下分割（いずれもカレントディレクトリを引き継ぐ）。
 
-## Codex
+### herdr
 
-```
-npm i -g @openai/codex   # or volta install @openai/codex
-mkdir -p ~/.codex/rules
-cp .codex/config.toml ~/.codex/config.toml
-ln -s "`pwd`"/.codex/rules/default.rules ~/.codex/rules/default.rules
-```
+tmux と同じキーに合わせてある（`prefix+v` 左右分割 / `prefix+s` 上下分割）。`prefix+n` で新しい space（workspace）を作る。次のタブは `prefix+shift+n`。
+ペイン内のリンク（OSC 8 リンクや `https://` の文字列）は **ctrl+クリック** でブラウザが開く。herdr がマウスを掴んでいる間は cmd の情報が届かないため cmd+クリックは使えない（shift+cmd+クリックなら端末側の処理に素通しできる）。
+設定を変えたら `herdr server reload-config`。
 
-- `config.toml` は Codex 自身が端末固有の状態(projects の trust_level, plugin marketplace のパスなど)を書き戻すため、リンクではなくコピーしてベースにする
-- `~/.codex/auth.json` は認証情報なので管理対象外(`codex login` で生成)
-- herdr 連携用の `hooks.json` / `herdr-agent-state.sh` は下記 `herdr integration install codex` で生成される
+通知まわりは cmux に寄せてある。`prefix+o` で通知が出たエージェントへジャンプ、`prefix+ctrl+j` / `prefix+ctrl+k` でエージェントを順送り、`prefix+ctrl+o` で直前のペインに戻る。`ctrl+alt+1〜9` でエージェント、`alt+1〜9` で workspace に直接飛べる。トーストは macOS の通知センターに出し、バックグラウンドの状態変化で音を鳴らす。IME 対応（候補ウィンドウの追従、prefix 中の英数切替）も有効。
 
-## herdr
+### ghostty
 
-```
-brew install herdr   # https://herdr.dev
-mkdir -p ~/.config/herdr
-ln -s "`pwd`"/.config/herdr/config.toml ~/.config/herdr/config.toml
-herdr integration install claude
-herdr integration install codex
-```
+フォントは `UDEV Gothic NF`（Brewfile の `font-udev-gothic-nf`）。設定変更は ghostty 上で `Cmd+Shift+,` で再読み込み。
 
-- 設定変更後は `prefix+shift+r` でライブリロード(`herdr server reload-config` でも可)
-- zsh 補完: `herdr completion zsh`
+**画像ペースト**: Claude Code と Codex はクリップボードの画像を `ctrl+v` で読み込む（`cmd+v` は端末がテキストしか渡せない）。`cmd+shift+v` を `ctrl+v` の別名にしてあるので、cmd 系でも貼れる。herdr 内でも同じ。
+
+**shift+enter** は改行を送る（Claude Code / Codex で複数行入力するため）。スクロールバックは 100000 行。
+
+### emacs
+
+パッケージは `.emacs.d/Cask` で管理。追加したら `cd .emacs.d && cask install`。
+
+### Claude Code / Codex
+
+`.claude/settings.json` と `statusline.sh`（`jq` が必要）。settings.json の `hooks` は herdr の連携用で、`herdr integration install claude` が管理する。
+Codex の `~/.codex/config.toml` はプロジェクトの trust 設定などマシン固有の内容が多いので丸ごとは管理せず、下部ステータスライン（モデル / コンテキスト使用率 / 5h・週次の残量 / 使用トークン / ブランチ）の `[tui] status_line` だけを `.codex/tui.toml` から追記する。項目名の一覧は同ファイルのコメントを参照。
+新しいマシンで `~/.codex/config.toml` が無いときだけ [.codex/config.toml](.codex/config.toml)（model / personality / 有効化する plugin だけの可搬な最小構成）をコピーして初期値にする。承認ルール `.codex/rules/default.rules` はシンボリックリンクで管理する。

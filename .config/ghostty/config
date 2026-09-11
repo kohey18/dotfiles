@@ -1,16 +1,21 @@
-# Ghostty config
-# 配置場所: ~/.config/ghostty/config
+# Ghostty config (~/.config/ghostty/config)
 # 全オプション: ghostty +show-config --default --docs / https://ghostty.org/docs/config
 # 再読込: cmd+shift+,
 
+# フォントは UDEV Gothic NF (Brewfile の font-udev-gothic-nf)。
+# 複数の font-family はフォールバック順。無いマシンでは Ricty / Monaco が使われる。
+font-family = "UDEV Gothic NF"
+font-family = "Ricty for Powerline"
+font-family = Monaco
+font-size = 14
+
 # shift+enter で改行を送る (Claude Code / Codex 等の TUI 向け)
 keybind = shift+enter=text:\n
+# Claude Code / Codex はクリップボードの画像を ctrl+v で読む。
+# cmd+v はテキスト専用（端末が画像を渡せない）ので、cmd+shift+v を ctrl+v の別名にする。
+keybind = super+shift+v=text:\x16
 
 scrollback-limit = 100000
 
 shell-integration = detect
 shell-integration-features = cursor,sudo,title
-
-font-family = Monaco
-font-family = Ricty for Powerline
-font-size = 16

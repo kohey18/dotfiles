@@ -4,3 +4,4 @@
 *.dat
 .tmux/
 .secret_zsh_setting
+.emacs.d/elpa/
