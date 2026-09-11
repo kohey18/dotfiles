@@ -1,0 +1,16 @@
+# Codex TUI の下部ステータスライン（Claude Code の statusline 相当）
+# setup.sh が ~/.codex/config.toml に status_line が無いときだけ追記する。
+# 項目を変えたいときは ~/.codex/config.toml 側を直接編集するか、Codex 内で /statusline を使う。
+#
+# 使える項目名 (codex 0.154.0):
+#   model, model-with-reasoning, reasoning, fast-mode, codex-version,
+#   context-used, context-remaining, context-window-size,
+#   five-hour-limit, weekly-limit, thread-credits, estimated-thread-cost,
+#   used-tokens, total-input-tokens, total-output-tokens,
+#   git-branch, branch-changes, pull-request-number, current-dir, project-name, hostname,
+#   thread, thread-name, thread-title, thread-id, task-progress, activity, status, run-state,
+#   permissions, approval, approval-mode, raw-output, workspace-headline, app-name
+# 利用できない項目（例: five-hour-limit が取得できない時）は自動的に省略される。
+
+[tui]
+status_line = ["model-with-reasoning", "context-used", "five-hour-limit", "weekly-limit", "estimated-thread-cost", "used-tokens", "git-branch"]
