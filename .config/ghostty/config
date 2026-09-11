@@ -2,11 +2,8 @@
 # 全オプション: ghostty +show-config --default --docs / https://ghostty.org/docs/config
 # 再読込: cmd+shift+,
 
-# フォントは UDEV Gothic NF (Brewfile の font-udev-gothic-nf)。
-# 複数の font-family はフォールバック順。無いマシンでは Ricty / Monaco が使われる。
+# フォントは UDEV Gothic NF (Brewfile の font-udev-gothic-nf)
 font-family = "UDEV Gothic NF"
-font-family = "Ricty for Powerline"
-font-family = Monaco
 font-size = 14
 
 # shift+enter で改行を送る (Claude Code / Codex 等の TUI 向け)
