@@ -1,0 +1,44 @@
+# Codex config.toml (portable subset)
+# 配置場所: ~/.codex/config.toml
+#
+# Codex アプリ / CLI は config.toml に端末固有の状態を書き戻す
+# (projects の trust_level, plugin marketplace のローカルパス, desktop 設定, hooks.state 等)。
+# そのためこのファイルはシンボリックリンクではなくコピーしてベースにする。
+
+model = "gpt-6-astra"
+model_reasoning_effort = "medium"
+personality = "pragmatic"
+
+[features]
+hooks = true
+js_repl = false
+
+[plugins."github@openai-curated"]
+enabled = true
+
+[plugins."browser@openai-bundled"]
+enabled = true
+
+[plugins."documents@openai-primary-runtime"]
+enabled = true
+
+[plugins."spreadsheets@openai-primary-runtime"]
+enabled = true
+
+[plugins."presentations@openai-primary-runtime"]
+enabled = true
+
+[plugins."sites@openai-bundled"]
+enabled = true
+
+[plugins."visualize@openai-bundled"]
+enabled = true
+
+[plugins."pdf@openai-primary-runtime"]
+enabled = true
+
+[plugins."template-creator@openai-primary-runtime"]
+enabled = true
+
+[plugins."codex-app-tools@openai-bundled"]
+enabled = true

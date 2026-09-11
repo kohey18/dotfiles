@@ -192,7 +192,21 @@ alias ghc='stack ghc --'
 alias ghci='stack ghci --'
 alias runhaskell='stack runhaskell --'
 
-# read secert setting
-source "${HOME}/.secret_zsh_setting"
-export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
-export PATH="/usr/local/opt/imagemagick@6/bin:$PATH"
+# secret settings (optional)
+[ -f "${HOME}/.secret_zsh_setting" ] && source "${HOME}/.secret_zsh_setting"
+
+# Homebrew (Apple Silicon)
+export PATH="/opt/homebrew/opt/mysql@8.0/bin:$PATH"
+export PATH="/opt/homebrew/opt/imagemagick@6/bin:$PATH"
+export PKG_CONFIG_PATH="/opt/homebrew/opt/imagemagick@6/lib/pkgconfig"
+
+# Volta / asdf
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"
+. "$(brew --prefix)/opt/asdf/libexec/asdf.sh"
+
+# qlty completions
+[ -s "/opt/homebrew/share/zsh/site-functions/_qlty" ] && source "/opt/homebrew/share/zsh/site-functions/_qlty"
+
+# local bin (herdr etc.)
+export PATH="$HOME/.local/bin:$PATH"

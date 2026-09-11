@@ -1,0 +1,49 @@
+onboarding = false
+# Herdr config.toml — cmuxの体験に近づけた構成
+# 配置場所: ~/.config/herdr/config.toml（既存ファイルがあれば該当セクションをマージ）
+# 反映: 保存後 prefix+shift+r でライブリロード
+
+[keys]
+# ── ご要望分 ──
+# workspace新規作成: ctrl+b → ctrl+n
+new_workspace = "prefix+n"
+
+# ── cmuxの「未読・通知に飛ぶ」体験の再現 ──
+# 通知が出たエージェントに即ジャンプ（cmuxの通知リング相当の要）
+open_notification_target = "prefix+o"   # デフォルトのまま明示
+
+# エージェント間を順送り（cmuxの未読ショートカット風）
+next_agent = "prefix+ctrl+j"
+previous_agent = "prefix+ctrl+k"
+
+# 直前のペインに戻る（作業中ペイン⇄通知ペインの往復用）
+last_pane = "prefix+ctrl+o"
+
+# エージェント1〜9に番号ダイレクトジャンプ（prefix不要の直接コード）
+[keys.indexed]
+agents = "ctrl+alt"       # ctrl+alt+1〜9 でエージェントへ
+workspaces = "alt"        # alt+1〜9 でworkspaceへ（iTerm2でOption送信設定が必要な場合あり）
+
+[ui.toast]
+# ポップアップ通知をmacOSのシステム通知に（cmuxのデスクトップ通知相当）
+delivery = "system"       # 通知センターに出したくない場合は "herdr"（アプリ内トースト）
+delay_seconds = 1         # 一瞬で状態が戻るチラつき通知を抑制
+
+[ui.sound]
+# バックグラウンドworkspaceのエージェント状態変化で音を鳴らす
+enabled = true
+# 完了と要応答で音を分けたい場合はmp3を用意して指定
+# done_path = "sounds/done.mp3"
+# request_path = "sounds/request.mp3"
+
+[ui]
+# サイドバーは常時表示でエージェント状態を一覧（cmuxのサイドバー感覚）
+sidebar_start_collapsed = false
+agent_panel_sort = "priority"   # blocked/doneなど要対応のエージェントを上に
+
+[experimental]
+# 日本語入力（IME)対応: Claude Code等のTUIでIME候補ウィンドウの追従を改善
+reveal_hidden_cursor_for_cjk_ime = true
+cjk_ime_agents = ["claude", "codex"]
+# prefixモード中は自動でASCII入力に切替（IMEオンのままctrl+b→キーが化けるのを防止）
+switch_ascii_input_source_in_prefix = true
