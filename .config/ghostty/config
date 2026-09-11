@@ -12,7 +12,5 @@ keybind = shift+enter=text:\n
 # cmd+v はテキスト専用（端末が画像を渡せない）ので、cmd+shift+v を ctrl+v の別名にする。
 keybind = super+shift+v=text:\x16
 
-scrollback-limit = 100000
-
 shell-integration = detect
 shell-integration-features = cursor,sudo,title

@@ -78,7 +78,7 @@ tmux と同じキーに合わせてある（`prefix+v` 左右分割 / `prefix+s`
 
 **画像ペースト**: Claude Code と Codex はクリップボードの画像を `ctrl+v` で読み込む（`cmd+v` は端末がテキストしか渡せない）。`cmd+shift+v` を `ctrl+v` の別名にしてあるので、cmd 系でも貼れる。herdr 内でも同じ。
 
-**shift+enter** は改行を送る（Claude Code / Codex で複数行入力するため）。スクロールバックは 100000 行。
+**shift+enter** は改行を送る（Claude Code / Codex で複数行入力するため）。
 
 ### emacs
 
