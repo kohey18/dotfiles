@@ -201,9 +201,9 @@ export PATH="$(brew --prefix openssl)/bin:$PATH"
 export RUBY_CONFIGURE_OPTS="--with-openssl-dir=$(brew --prefix openssl)"
 
 # mysql / imagemagick
-export PATH="/usr/local/opt/mysql@5.7/bin:$PATH"
+export PATH="/opt/homebrew/opt/mysql@8.0/bin:$PATH"
 export PATH="/opt/homebrew/opt/imagemagick@6/bin:$PATH"
-export PKG_CONFIG_PATH=/opt/ImageMagick/lib/pkgconfig
+export PKG_CONFIG_PATH="/opt/homebrew/opt/imagemagick@6/lib/pkgconfig"
 
 # volta
 export VOLTA_HOME="$HOME/.volta"
@@ -217,8 +217,8 @@ command -v pyenv >/dev/null && eval "$(pyenv init -)"
 # asdf
 [ -f /opt/homebrew/opt/asdf/libexec/asdf.sh ] && . /opt/homebrew/opt/asdf/libexec/asdf.sh
 
-# Antigravity
-export PATH="$HOME/.antigravity/antigravity/bin:$PATH"
+# qlty completions
+[ -s "/opt/homebrew/share/zsh/site-functions/_qlty" ] && source "/opt/homebrew/share/zsh/site-functions/_qlty"
 
 # claude / codex / herdr など
 export PATH="$HOME/.local/bin:$PATH"

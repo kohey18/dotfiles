@@ -60,6 +60,7 @@ link .config/herdr/config.toml  "${HOME_DIR}/.config/herdr/config.toml"
 link .config/ghostty/config     "${HOME_DIR}/.config/ghostty/config"
 link .claude/settings.json      "${HOME_DIR}/.claude/settings.json"
 link .claude/statusline.sh      "${HOME_DIR}/.claude/statusline.sh"
+link .codex/rules/default.rules "${HOME_DIR}/.codex/rules/default.rules"
 
 # ---- tmux-powerline --------------------------------------------------------
 if [ ! -d "${HOME_DIR}/.tmux/tmux-powerline" ]; then
@@ -116,6 +117,11 @@ fi
 # ~/.codex/config.toml はプロジェクトの trust 設定などマシン固有の内容を含むので
 # 丸ごとは管理せず、[tui] status_line が無いときだけ .codex/tui.toml を追記する。
 CODEX_CONFIG="${HOME_DIR}/.codex/config.toml"
+if [ ! -e "${CODEX_CONFIG}" ]; then
+  log "copy    ${DOTFILES}/.codex/config.toml -> ${CODEX_CONFIG}"
+  mkdir -p "$(dirname "${CODEX_CONFIG}")"
+  cp "${DOTFILES}/.codex/config.toml" "${CODEX_CONFIG}"
+fi
 if grep -qs "^status_line" "${CODEX_CONFIG}"; then
   log "ok      ${CODEX_CONFIG} (status_line)"
 else

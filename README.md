@@ -43,11 +43,12 @@ chsh -s "$(command -v zsh)"
    | `.config/ghostty/config` | `~/.config/ghostty/config` |
    | `.claude/settings.json` | `~/.claude/settings.json` |
    | `.claude/statusline.sh` | `~/.claude/statusline.sh` |
+   | `.codex/rules/default.rules` | `~/.codex/rules/default.rules` |
 
 4. `~/.tmux/tmux-powerline` を clone
 5. `cask install` で emacs パッケージをインストール
 6. `herdr integration install claude` / `codex` で herdr のエージェント連携を有効化し、サーバーが起動していれば `herdr server reload-config`
-7. Codex の `~/.codex/config.toml` に `[tui] status_line`（[.codex/tui.toml](.codex/tui.toml)）が無ければ追記
+7. Codex の `~/.codex/config.toml` が無ければ [.codex/config.toml](.codex/config.toml) をコピーし、`[tui] status_line`（[.codex/tui.toml](.codex/tui.toml)）が無ければ追記
 8. 自作 macOS アプリをソースからビルドして `/Applications` にインストール（dotfiles と同じ親ディレクトリに clone）
    - [kanatan](https://github.com/kohey18/kanatan) … 左⌘で英数 / 右⌘でかな
    - [editan](https://github.com/kohey18/editan) … ステージング用エディタ
@@ -69,11 +70,15 @@ tmux と同じキーに合わせてある（`prefix+v` 左右分割 / `prefix+s`
 ペイン内のリンク（OSC 8 リンクや `https://` の文字列）は **ctrl+クリック** でブラウザが開く。herdr がマウスを掴んでいる間は cmd の情報が届かないため cmd+クリックは使えない（shift+cmd+クリックなら端末側の処理に素通しできる）。
 設定を変えたら `herdr server reload-config`。
 
+通知まわりは cmux に寄せてある。`prefix+o` で通知が出たエージェントへジャンプ、`prefix+ctrl+j` / `prefix+ctrl+k` でエージェントを順送り、`prefix+ctrl+o` で直前のペインに戻る。`ctrl+alt+1〜9` でエージェント、`alt+1〜9` で workspace に直接飛べる。トーストは macOS の通知センターに出し、バックグラウンドの状態変化で音を鳴らす。IME 対応（候補ウィンドウの追従、prefix 中の英数切替）も有効。
+
 ### ghostty
 
 フォントは `UDEV Gothic NF`（Brewfile の `font-udev-gothic-nf`）。設定変更は ghostty 上で `Cmd+Shift+,` で再読み込み。
 
 **画像ペースト**: Claude Code と Codex はクリップボードの画像を `ctrl+v` で読み込む（`cmd+v` は端末がテキストしか渡せない）。`cmd+shift+v` を `ctrl+v` の別名にしてあるので、cmd 系でも貼れる。herdr 内でも同じ。
+
+**shift+enter** は改行を送る（Claude Code / Codex で複数行入力するため）。
 
 ### emacs
 
@@ -83,3 +88,4 @@ tmux と同じキーに合わせてある（`prefix+v` 左右分割 / `prefix+s`
 
 `.claude/settings.json` と `statusline.sh`（`jq` が必要）。settings.json の `hooks` は herdr の連携用で、`herdr integration install claude` が管理する。
 Codex の `~/.codex/config.toml` はプロジェクトの trust 設定などマシン固有の内容が多いので丸ごとは管理せず、下部ステータスライン（モデル / コンテキスト使用率 / 5h・週次の残量 / 使用トークン / ブランチ）の `[tui] status_line` だけを `.codex/tui.toml` から追記する。項目名の一覧は同ファイルのコメントを参照。
+新しいマシンで `~/.codex/config.toml` が無いときだけ [.codex/config.toml](.codex/config.toml)（model / personality / 有効化する plugin だけの可搬な最小構成）をコピーして初期値にする。承認ルール `.codex/rules/default.rules` はシンボリックリンクで管理する。

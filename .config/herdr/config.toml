@@ -1,4 +1,7 @@
 onboarding = false
+# Herdr config.toml
+# 配置場所: ~/.config/herdr/config.toml
+# 反映: 保存後 prefix+shift+r でライブリロード（または herdr server reload-config）
 
 [keys]
 # tmux (.tmux.conf) と同じ分割キー
@@ -9,3 +12,41 @@ settings = "prefix+shift+s"
 # prefix+n で新しい space (workspace) を作る。元の prefix+n (next_tab) は shift 側へ
 new_workspace = "prefix+n"
 next_tab = "prefix+shift+n"
+
+# ── cmux の「未読・通知に飛ぶ」体験の再現 ──
+# 通知が出たエージェントに即ジャンプ（cmux の通知リング相当）
+open_notification_target = "prefix+o"   # デフォルトのまま明示
+# エージェント間を順送り（cmux の未読ショートカット風）
+next_agent = "prefix+ctrl+j"
+previous_agent = "prefix+ctrl+k"
+# 直前のペインに戻る（作業中ペイン <-> 通知ペインの往復用）
+last_pane = "prefix+ctrl+o"
+
+# エージェント 1〜9 / workspace 1〜9 に番号ダイレクトジャンプ（prefix 不要）
+[keys.indexed]
+agents = "ctrl+alt"       # ctrl+alt+1〜9 でエージェントへ
+workspaces = "alt"        # alt+1〜9 で workspace へ
+
+[ui]
+# サイドバーは常時表示でエージェント状態を一覧（cmux のサイドバー感覚）
+sidebar_start_collapsed = false
+agent_panel_sort = "priority"   # blocked/done など要対応のエージェントを上に
+
+[ui.toast]
+# ポップアップ通知を macOS のシステム通知に（cmux のデスクトップ通知相当）
+delivery = "system"       # 通知センターに出したくない場合は "herdr"（アプリ内トースト）
+delay_seconds = 1         # 一瞬で状態が戻るチラつき通知を抑制
+
+[ui.sound]
+# バックグラウンド workspace のエージェント状態変化で音を鳴らす
+enabled = true
+# 完了と要応答で音を分けたい場合は mp3 を用意して指定
+# done_path = "sounds/done.mp3"
+# request_path = "sounds/request.mp3"
+
+[experimental]
+# 日本語入力 (IME) 対応: Claude Code 等の TUI で IME 候補ウィンドウの追従を改善
+reveal_hidden_cursor_for_cjk_ime = true
+cjk_ime_agents = ["claude", "codex"]
+# prefix モード中は自動で ASCII 入力に切替（IME オンのまま ctrl+b -> キーが化けるのを防止）
+switch_ascii_input_source_in_prefix = true
