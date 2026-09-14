@@ -43,6 +43,8 @@ chsh -s "$(command -v zsh)"
    | `.config/ghostty/config` | `~/.config/ghostty/config` |
    | `.claude/settings.json` | `~/.claude/settings.json` |
    | `.claude/statusline.sh` | `~/.claude/statusline.sh` |
+   | `.claude/CLAUDE.md` | `~/.claude/CLAUDE.md`（全プロジェクト共通の指示。Herdr 内で動いていることを Claude に伝える） |
+   | `.claude/skills/herdr/` | `~/.claude/skills/herdr`（Herdr 操作スキル。`herdr --skill` の出力 + 運用の補足） |
 
 4. `~/.tmux/tmux-powerline` を clone
 5. `cask install` で emacs パッケージをインストール
@@ -68,6 +70,10 @@ chsh -s "$(command -v zsh)"
 tmux と同じキーに合わせてある（`prefix+v` 左右分割 / `prefix+s` 上下分割）。`prefix+n` で新しい space（workspace）を作る。次のタブは `prefix+shift+n`。
 ペイン内のリンク（OSC 8 リンクや `https://` の文字列）は **ctrl+クリック** でブラウザが開く。herdr がマウスを掴んでいる間は cmd の情報が届かないため cmd+クリックは使えない（shift+cmd+クリックなら端末側の処理に素通しできる）。
 設定を変えたら `herdr server reload-config`。
+
+Claude Code から Herdr を操作する手順（別ペインで codex を yolo 起動、別 space で作業、終了通知）は
+`.claude/skills/herdr/SKILL.md` にまとめてある。`herdr --skill` の公式出力に「補足」節を足したもので、
+herdr を更新して公式部分が変わったら `herdr --skill` で先頭部分を差し替える。
 
 ### ghostty
 
