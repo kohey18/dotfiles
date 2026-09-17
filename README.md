@@ -25,7 +25,7 @@ chsh -s "$(command -v zsh)"
 
 1. Homebrew が無ければインストールし、`brew shellenv` を `~/.zprofile` に追記
 2. `brew bundle` で [Brewfile](Brewfile) のパッケージを一括インストール
-   - zsh / tmux / reattach-to-user-namespace / jq / asdf / emacs / cask / herdr / git / xcodegen
+   - zsh / tmux / reattach-to-user-namespace / jq / asdf / emacs / herdr / git / xcodegen
    - `.zshrc` が使う rbenv / pyenv / volta / peco
    - `ghostty`（ターミナル）
    - `font-udev-gothic-nf`（ghostty / tmux / emacs で使う Nerd Font）
@@ -46,10 +46,9 @@ chsh -s "$(command -v zsh)"
    | `.codex/rules/default.rules` | `~/.codex/rules/default.rules` |
 
 4. `~/.tmux/tmux-powerline` を clone
-5. `cask install` で emacs パッケージをインストール
-6. `herdr integration install claude` / `codex` で herdr のエージェント連携を有効化し、サーバーが起動していれば `herdr server reload-config`
-7. Codex の `~/.codex/config.toml` が無ければ [.codex/config.toml](.codex/config.toml) をコピーし、`[tui] status_line`（[.codex/tui.toml](.codex/tui.toml)）が無ければ追記
-8. 自作 macOS アプリをソースからビルドして `/Applications` にインストール（dotfiles と同じ親ディレクトリに clone）
+5. `herdr integration install claude` / `codex` で herdr のエージェント連携を有効化し、サーバーが起動していれば `herdr server reload-config`
+6. Codex の `~/.codex/config.toml` が無ければ [.codex/config.toml](.codex/config.toml) をコピーし、`[tui] status_line`（[.codex/tui.toml](.codex/tui.toml)）が無ければ追記
+7. 自作 macOS アプリをソースからビルドして `/Applications` にインストール（dotfiles と同じ親ディレクトリに clone）
    - [kanatan](https://github.com/kohey18/kanatan) … 左⌘で英数 / 右⌘でかな
    - [editan](https://github.com/kohey18/editan) … ステージング用エディタ
 
@@ -82,7 +81,7 @@ tmux と同じキーに合わせてある（`prefix+v` 左右分割 / `prefix+s`
 
 ### emacs
 
-パッケージは `.emacs.d/Cask` で管理。追加したら `cd .emacs.d && cask install`。
+パッケージ一覧は `.emacs.d/Cask` に残っているが、一部が MELPA から消えていて `cask install` が通らないため setup.sh からは外している。必要なら手動で `cd .emacs.d && cask install`。
 
 ### Claude Code / Codex
 

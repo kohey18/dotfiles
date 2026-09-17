@@ -70,12 +70,6 @@ else
   log "ok      ${HOME_DIR}/.tmux/tmux-powerline"
 fi
 
-# ---- emacs packages --------------------------------------------------------
-if command -v cask >/dev/null 2>&1; then
-  log "cask install (emacs packages)"
-  (cd "${DOTFILES}/.emacs.d" && cask install)
-fi
-
 # ---- herdr integrations (Claude Code / Codex の状態をサイドバーに出す) --------
 if command -v herdr >/dev/null 2>&1; then
   for agent in claude codex; do

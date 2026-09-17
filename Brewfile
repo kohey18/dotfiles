@@ -6,7 +6,6 @@ brew "reattach-to-user-namespace"
 brew "jq"
 brew "asdf"
 brew "emacs"
-brew "cask"          # emacs のパッケージ管理 (.emacs.d/Cask)
 brew "herdr"
 brew "xcodegen"      # kanatan / editan のビルドに必要
 # .zshrc が起動時に使うもの
