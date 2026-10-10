@@ -44,7 +44,6 @@ studio 側のエージェントには `studio-sync setup` が次の案内を追�
 - 衝突 (両側で同じファイルを編集) は上書きせず `studio-sync status` に出る。`studio-sync reset` で解消。
 - 片側のフォルダが**完全に空**になると Mutagen は安全弁で止まる (`Halted due to one-sided root emptying`。実機で確認)。`studio-sync setup` が `.keep` を置いて空にならないようにしている。`.keep` ごと消して止まったら `studio-sync reset`。
 - Finder の「場所」に外付けディスクのように出したい場合は、両機で同名のディスクイメージを `/Volumes/Studio` にマウントし、同期対象をそこに変える (`STUDIO_SYNC_DIR`)。マウント忘れで Mutagen からフォルダが消えて見える弱点があるので、まずは `/Users/Shared/sync` で始める。
-- `bin/studio-share` は補助経路。クリップボードの中身 (Finder で ⌘C したファイル、画像、長文テキスト) を `studio:~/inbox/` に rsync してリモートのパスを返す。同期フォルダで足りるなら使わなくてよい。
 
 ## 検討した代替案
 

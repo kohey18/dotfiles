@@ -44,7 +44,7 @@ chsh -s "$(command -v zsh)"
    | `.claude/settings.json` | `~/.claude/settings.json` |
    | `.claude/statusline.sh` | `~/.claude/statusline.sh` |
    | `.codex/rules/default.rules` | `~/.codex/rules/default.rules` |
-   | `bin/*` | `~/.local/bin/*` (studio-sync / studio-share) |
+   | `bin/*` | `~/.local/bin/*` (studio-sync) |
 
 4. `~/.tmux/tmux-powerline` を clone
 4'. `/Users/Shared/sync` を作り、mutagen daemon をログイン時自動起動に登録 (同期の開始は後述の `studio-sync setup`)
