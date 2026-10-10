@@ -9,7 +9,8 @@
 #   remote-sync status    同期の状態と衝突の一覧
 #   remote-sync flush     溜まっている変更を今すぐ反映して待つ (大きいファイルを渡す前に)
 #   remote-sync pause | resume
-#   remote-sync reset     "Halted" で止まったときの復帰 (履歴を捨てて両側を見直す。衝突の解消には使わない)
+#   remote-sync reset     "Halted" で止まったときの復帰。履歴を捨てて両側の中身を足し合わせる
+#                         (空にした側には相手側のファイルが戻ってくる。衝突の解消には使わない)
 #   remote-sync remove    セッションを消す (フォルダとファイルは残る)
 #
 # 環境変数 (省略時の値):
@@ -71,6 +72,9 @@ remote_setup() {
   log "${HOST}: ${DIR} を用意し、~/.claude/CLAUDE.md と ~/.codex/AGENTS.md の案内ブロックを更新"
   local note_b64
   note_b64="$(agent_note | base64 | tr -d '\n')"
+  # 接続そのものの失敗と、リモート側の準備の失敗を区別する
+  ssh "${SSH_OPTS[@]}" "$HOST" true 2>/dev/null \
+    || die "${HOST} に ssh できません (ネットワークと ssh 鍵を確認。パスフレーズ付きの鍵は ssh-add --apple-use-keychain)"
   # DIR は上で安全な文字に限定済み。案内文は base64 で渡し、リモートで復元する
   ssh "${SSH_OPTS[@]}" "$HOST" "
     set -e
@@ -94,7 +98,7 @@ remote_setup() {
   " || {
     local rc=$?
     [ "$rc" -eq 3 ] && die "${HOST} 側のフォルダに問題があります (上のメッセージ参照)"
-    die "${HOST} に ssh できないか、リモートの準備に失敗しました (rc=${rc})"
+    die "${HOST} 側の準備に失敗しました (rc=${rc}。上のエラーを確認してください)"
   }
 }
 
