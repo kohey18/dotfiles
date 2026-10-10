@@ -44,10 +44,10 @@ chsh -s "$(command -v zsh)"
    | `.claude/settings.json` | `~/.claude/settings.json` |
    | `.claude/statusline.sh` | `~/.claude/statusline.sh` |
    | `.codex/rules/default.rules` | `~/.codex/rules/default.rules` |
-   | `bin/*` | `~/.local/bin/*` (studio-sync) |
+   | `bin/*` | `~/.local/bin/*` (remote-sync) |
 
 4. `~/.tmux/tmux-powerline` を clone
-4'. `/Users/Shared/sync` を作り、mutagen daemon をログイン時自動起動に登録 (同期の開始は後述の `studio-sync setup`)
+4'. `/Users/Shared/sync` を作り (700)、mutagen daemon をログイン時自動起動に登録 (同期の開始は後述の `remote-sync setup`)
 5. `herdr integration install claude` / `codex` で herdr のエージェント連携を有効化し、サーバーが起動していれば `herdr server reload-config`
 6. Codex の `~/.codex/config.toml` が無ければ [.codex/config.toml](.codex/config.toml) をコピーし、`[tui] status_line`（[.codex/tui.toml](.codex/tui.toml)）が無ければ追記
 7. 自作 macOS アプリをソースからビルドして `/Applications` にインストール（dotfiles と同じ親ディレクトリに clone）
@@ -73,16 +73,16 @@ tmux と同じキーに合わせてある（`prefix+v` 左右分割 / `prefix+s`
 
 通知まわりは cmux に寄せてある。`prefix+o` で通知が出たエージェントへジャンプ、`prefix+ctrl+j` / `prefix+ctrl+k` でエージェントを順送り、`prefix+ctrl+o` で直前のペインに戻る。`ctrl+alt+1〜9` でエージェント、`alt+1〜9` で workspace に直接飛べる。トーストは macOS の通知センターに出し、バックグラウンドの状態変化で音を鳴らす。IME 対応（候補ウィンドウの追従、prefix 中の英数切替）も有効。
 
-### MacBook ↔ studio のファイル受け渡し (studio-sync)
+### リモート開発機とのファイル受け渡し (remote-sync)
 
-自宅 Mac Studio (`ssh studio`) 上の Claude Code / Codex にファイルを渡すための同期フォルダ。両方の Mac の `/Users/Shared/sync` を Mutagen で双方向同期するので、Finder から herdr のペインにドラッグしたパスが studio 側でもそのまま読める。
+ssh で繋がるリモートの Mac 上の Claude Code / Codex にファイルを渡すための同期フォルダ。両方の Mac の `/Users/Shared/sync` を Mutagen で双方向同期するので、Finder から herdr のペインにドラッグしたパスがリモート側でもそのまま読める。
 
 ```
-studio-sync setup    # 初回。両機のフォルダ作成、studio の CLAUDE.md / AGENTS.md に案内追記、同期セッション作成
-studio-sync status   # Watching for changes なら OK
+remote-sync setup    # 初回。両機のフォルダ作成、リモートの CLAUDE.md / AGENTS.md に案内、同期セッション作成
+remote-sync status   # Watching for changes なら OK
 ```
 
-使い方は「`~/Downloads` から必要なものだけ Finder で `sync` にドラッグ → `sync` から herdr のペインにドラッグ」。スクショは `herdr --remote` 上で `ctrl+v` すれば herdr が転送する。詳細と代替案は [docs/remote-handoff.md](docs/remote-handoff.md)。
+接続先は `REMOTE_HOST` (既定 `studio`、`~/.ssh/config` の Host 名)。使い方は「`~/Downloads` から必要なものだけ Finder で `sync` にドラッグ → `sync` から herdr のペインにドラッグ」。削除も相手側に伝播する点に注意。スクショは `herdr --remote` 上で `ctrl+v` すれば herdr が転送する。詳細と代替案は [docs/remote-sync.md](docs/remote-sync.md)。
 
 ### ghostty
 

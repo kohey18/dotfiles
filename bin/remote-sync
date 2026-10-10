@@ -1,0 +1,184 @@
+#!/usr/bin/env bash
+# remote-sync: 手元の Mac とリモートの Mac (ssh で繋がる開発機) の /Users/Shared/sync を Mutagen で同期する。
+# 両方の Mac に同じ絶対パスでフォルダがあるので、Finder から herdr のペインにドラッグしたパスを
+# リモート上の Claude Code / Codex がそのまま Read できる。
+#
+#   remote-sync setup     初回: 両機にフォルダを作り (700)、リモートの ~/.claude/CLAUDE.md と ~/.codex/AGENTS.md に
+#                         エージェント向けの案内ブロックを書き、mutagen daemon をログイン時自動起動にして同期セッションを作る。
+#                         何度実行しても安全 (同じ設定なら何もしない。設定が変わっていれば止まって教える)
+#   remote-sync status    同期の状態と衝突の一覧
+#   remote-sync flush     溜まっている変更を今すぐ反映して待つ (大きいファイルを渡す前に)
+#   remote-sync pause | resume
+#   remote-sync reset     "Halted" で止まったときの復帰 (履歴を捨てて両側を見直す。衝突の解消には使わない)
+#   remote-sync remove    セッションを消す (フォルダとファイルは残る)
+#
+# 環境変数 (省略時の値):
+#   REMOTE_HOST=studio               ssh の Host 名 (~/.ssh/config)
+#   REMOTE_SYNC_DIR=/Users/Shared/sync  両機で同じ絶対パス。英数字と . _ - / のみ
+#   REMOTE_SYNC_NAME=remote          Mutagen のセッション名
+#   REMOTE_SYNC_MODE=two-way-safe    two-way-safe | two-way-resolved | one-way-safe | one-way-replica
+set -euo pipefail
+
+HOST="${REMOTE_HOST:-studio}"
+DIR="${REMOTE_SYNC_DIR:-/Users/Shared/sync}"
+NAME="${REMOTE_SYNC_NAME:-remote}"
+MODE="${REMOTE_SYNC_MODE:-two-way-safe}"
+SSH_OPTS=(-o BatchMode=yes -o ConnectTimeout=8)
+BEGIN_MARK='<!-- remote-sync:begin -->'
+END_MARK='<!-- remote-sync:end -->'
+
+log() { printf '\033[1;32m==>\033[0m %s\n' "$*"; }
+warn() { printf '\033[1;33mWARN\033[0m %s\n' "$*" >&2; }
+die() { printf 'remote-sync: %s\n' "$*" >&2; exit 1; }
+usage() { sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; exit "${1:-0}"; }
+
+# ---- 入力の検証 (リモートの shell に埋め込むので、安全な文字に限定する) ----
+case "$DIR" in
+  /*) ;; *) die "REMOTE_SYNC_DIR は絶対パスにしてください: $DIR" ;;
+esac
+case "$DIR" in
+  *..*|*[!A-Za-z0-9._/-]*) die "REMOTE_SYNC_DIR に使える文字は英数字と . _ - / だけです: $DIR" ;;
+esac
+case "$HOST" in
+  ''|-*|*[!A-Za-z0-9._@-]*) die "REMOTE_HOST が不正です: $HOST" ;;
+esac
+case "$NAME" in
+  ''|*[!a-z0-9-]*) die "REMOTE_SYNC_NAME は小文字英数字と - だけです: $NAME" ;;
+esac
+case "$MODE" in
+  two-way-safe|two-way-resolved|one-way-safe|one-way-replica) ;;
+  *) die "REMOTE_SYNC_MODE が不正です: $MODE" ;;
+esac
+
+# ---- リモートの CLAUDE.md / AGENTS.md に書く案内 (設定に合わせて毎回書き直す) ----
+agent_note() {
+  local direction="双方向"
+  case "$MODE" in one-way-*) direction="手元の端末からこの Mac への片方向" ;; esac
+  cat <<NOTE
+${BEGIN_MARK}
+## 同期フォルダ (remote-sync)
+${DIR} は、この Mac に ssh で接続してくる手元の端末と Mutagen で同期されている (${direction})。
+- この Mac のホーム以外の /Users/<別ユーザ>/... で始まるパスや、この Mac に存在しないパスを渡されたら、そのファイルは手元の端末側にある可能性が高い。まず ${DIR} に同名のファイルが無いか探し、無ければ「${DIR} に入れてください」と頼む。同期は非同期なので、入れた直後なら数秒待って再確認する。
+NOTE
+  case "$MODE" in
+    two-way-*) printf -- '- 成果物を手元の端末に渡したいときも %s に書く。\n' "$DIR" ;;
+  esac
+  printf '%s\n' "$END_MARK"
+}
+
+# ---- リモート側の準備 (フォルダ 700 + 所有者確認 + 案内ブロックの置換) ----
+remote_setup() {
+  log "${HOST}: ${DIR} を用意し、~/.claude/CLAUDE.md と ~/.codex/AGENTS.md の案内ブロックを更新"
+  local note_b64
+  note_b64="$(agent_note | base64 | tr -d '\n')"
+  # DIR は上で安全な文字に限定済み。案内文は base64 で渡し、リモートで復元する
+  ssh "${SSH_OPTS[@]}" "$HOST" "
+    set -e
+    umask 077
+    mkdir -p '${DIR}'
+    if [ -L '${DIR}' ] || [ ! -O '${DIR}' ]; then
+      echo '${DIR} が symlink か、自分の所有ではありません。確認してください' >&2; exit 3
+    fi
+    chmod 700 '${DIR}'
+    mkdir -p ~/.claude ~/.codex
+    note=\"\$(printf %s '${note_b64}' | base64 -d)\"
+    for f in ~/.claude/CLAUDE.md ~/.codex/AGENTS.md; do
+      [ -f \"\$f\" ] || : > \"\$f\"
+      tmp=\"\$(mktemp)\"
+      # 既存ブロックを除き、末尾の空行も落としてから、空行 1 つを挟んでブロックを書く
+      awk '/${BEGIN_MARK}/{skip=1} /${END_MARK}/{skip=0; next} skip{next} /^$/{b++; next} {for(;b>0;b--) print \"\"; print}' \"\$f\" > \"\$tmp\"
+      cat \"\$tmp\" > \"\$f\"; rm -f \"\$tmp\"
+      [ -s \"\$f\" ] && printf '\\n' >> \"\$f\"
+      printf '%s\\n' \"\$note\" >> \"\$f\"
+    done
+  " || {
+    local rc=$?
+    [ "$rc" -eq 3 ] && die "${HOST} 側のフォルダに問題があります (上のメッセージ参照)"
+    die "${HOST} に ssh できないか、リモートの準備に失敗しました (rc=${rc})"
+  }
+}
+
+# ---- Mutagen セッションの検索 (名前は一意でないので ID で扱う) ----
+# 出力: 一致した ID を 1 行 1 つ
+session_ids() {
+  mutagen sync list --template '{{range .}}{{.Identifier}}|{{.Name}}|{{.Alpha.Path}}|{{.Beta.Host}}|{{.Beta.Path}}{{"\n"}}{{end}}' 2>/dev/null \
+    | awk -F'|' -v n="$NAME" '$2==n {print $1}'
+}
+resolve_id() {
+  local ids
+  ids="$(session_ids)"
+  [ -n "$ids" ] || die "セッション '${NAME}' がありません。remote-sync setup を実行してください"
+  [ "$(printf '%s\n' "$ids" | wc -l | tr -d ' ')" -eq 1 ] || die "'${NAME}' という名前のセッションが複数あります。mutagen sync list で確認し、不要なものを mutagen sync terminate <ID> で消してください"
+  printf '%s' "$ids"
+}
+mode_label() {
+  case "$1" in
+    two-way-safe) echo "Two Way Safe" ;; two-way-resolved) echo "Two Way Resolved" ;;
+    one-way-safe) echo "One Way Safe" ;; one-way-replica) echo "One Way Replica" ;;
+  esac
+}
+# 既存セッションが今の設定 (DIR / HOST / MODE) と一致しているか
+verify_session() {
+  local id="$1" row alpha bhost bpath mode
+  row="$(mutagen sync list --template '{{range .}}{{.Identifier}}|{{.Name}}|{{.Alpha.Path}}|{{.Beta.Host}}|{{.Beta.Path}}{{"\n"}}{{end}}' | awk -F'|' -v i="$id" '$1==i')"
+  alpha="$(printf '%s' "$row" | cut -d'|' -f3)"
+  bhost="$(printf '%s' "$row" | cut -d'|' -f4)"
+  bpath="$(printf '%s' "$row" | cut -d'|' -f5)"
+  mode="$(mutagen sync list -l "$id" | sed -n 's/^[[:space:]]*Synchronization mode: //p' | head -n1)"
+  if [ "$alpha" != "$DIR" ] || [ "$bhost" != "$HOST" ] || [ "$bpath" != "$DIR" ] || [ "$mode" != "$(mode_label "$MODE")" ]; then
+    printf 'remote-sync: 既存のセッション %s は今の設定と違います\n' "$NAME" >&2
+    printf '  既存: %s -> %s:%s (%s)\n  設定: %s -> %s:%s (%s)\n' "$alpha" "$bhost" "$bpath" "$mode" "$DIR" "$HOST" "$DIR" "$(mode_label "$MODE")" >&2
+    die "変更するなら remote-sync remove で消してから setup をやり直してください"
+  fi
+}
+
+cmd_setup() {
+  command -v mutagen >/dev/null 2>&1 || die "mutagen がありません: brew install mutagen-io/mutagen/mutagen"
+
+  log "local: ${DIR} を用意 (700)"
+  mkdir -p "$DIR"
+  if [ -L "$DIR" ] || [ ! -O "$DIR" ]; then
+    die "${DIR} が symlink か、自分の所有ではありません。確認してください"
+  fi
+  chmod 700 "$DIR"
+  # フォルダが完全に空になると Mutagen が安全弁で止まるので、空にならない番人を置く (docs 参照)
+  [ -e "$DIR/.keep" ] || : > "$DIR/.keep"
+
+  remote_setup
+
+  log "mutagen daemon をログイン時自動起動に登録"
+  mutagen daemon register >/dev/null 2>&1 || true
+  [ -f "$HOME/Library/LaunchAgents/io.mutagen.mutagen.plist" ] \
+    || die "mutagen daemon の自動起動登録に失敗しました。'mutagen daemon register' を直接実行して確認してください"
+  mutagen daemon start >/dev/null 2>&1 || true
+
+  local ids count id
+  ids="$(session_ids)"
+  count=0; [ -n "$ids" ] && count="$(printf '%s\n' "$ids" | wc -l | tr -d ' ')"
+  if [ "$count" -gt 1 ]; then
+    die "'${NAME}' という名前のセッションが複数あります。mutagen sync list で確認してください"
+  elif [ "$count" -eq 1 ]; then
+    verify_session "$ids"
+    log "ok      同期セッション '${NAME}' は設定どおり作成済み"
+    id="$ids"
+  else
+    log "同期セッション '${NAME}' を作成 (${MODE})"
+    mutagen sync create --name "$NAME" --mode "$MODE" \
+      --ignore .DS_Store --symlink-mode portable \
+      --default-file-mode 0600 --default-directory-mode 0700 \
+      "$DIR" "${HOST}:${DIR}" >/dev/null
+    id="$(resolve_id)"
+    log "Finder で ${DIR} を開きます。サイドバーの「よく使う項目」にドラッグしておくと便利です"
+    open "$DIR" 2>/dev/null || true
+  fi
+  mutagen sync list "$id"
+}
+
+case "${1:-}" in
+  setup)  cmd_setup ;;
+  status) mutagen sync list "$(resolve_id)" ;;
+  flush|pause|resume|reset) mutagen sync "$1" "$(resolve_id)" ;;
+  remove) mutagen sync terminate "$(resolve_id)" ;;
+  -h|--help|help|"") usage 0 ;;
+  *) usage 1 ;;
+esac

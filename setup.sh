@@ -69,13 +69,24 @@ for f in "${DOTFILES}"/bin/*; do
   link "bin/${f##*/}" "${HOME_DIR}/.local/bin/${f##*/}"
 done
 
-# ---- studio 同期フォルダ (Mutagen) ------------------------------------------
-# 両方の Mac に同じ絶対パスで置くので、Finder からドラッグしたパスが studio 側でもそのまま読める。
-# 同期セッションの作成は ssh studio が通る前提なので setup.sh ではやらず、`studio-sync setup` で行う。
-mkdir -p /Users/Shared/sync
+# ---- リモート開発機との同期フォルダ (Mutagen) ----------------------------------
+# 両方の Mac に同じ絶対パスで置くので、Finder からドラッグしたパスがリモート側でもそのまま読める。
+# 同期セッションの作成は ssh が通る前提なので setup.sh ではやらず、`remote-sync setup` で行う。
+SYNC_DIR="/Users/Shared/sync"
+mkdir -p "${SYNC_DIR}"
+if [ ! -L "${SYNC_DIR}" ] && [ -O "${SYNC_DIR}" ]; then
+  chmod 700 "${SYNC_DIR}"
+  log "ok      ${SYNC_DIR}"
+else
+  log "WARN    ${SYNC_DIR} が symlink か自分の所有ではありません。確認してください"
+fi
 if command -v mutagen >/dev/null 2>&1; then
   mutagen daemon register >/dev/null 2>&1 || true
-  log "ok      mutagen daemon (login 自動起動)。同期の開始は: studio-sync setup"
+  if [ -f "${HOME_DIR}/Library/LaunchAgents/io.mutagen.mutagen.plist" ]; then
+    log "ok      mutagen daemon (login 自動起動)。同期の開始は: remote-sync setup"
+  else
+    log "WARN    mutagen daemon の自動起動登録に失敗しました: mutagen daemon register を直接実行してください"
+  fi
 fi
 
 # ---- tmux-powerline --------------------------------------------------------

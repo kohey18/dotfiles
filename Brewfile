@@ -9,7 +9,7 @@ brew "asdf"
 brew "emacs"
 brew "herdr"
 tap "mutagen-io/mutagen"
-brew "mutagen-io/mutagen/mutagen"  # MacBook <-> mac-studio の /Users/Shared/sync 同期 (bin/studio-sync)
+brew "mutagen-io/mutagen/mutagen"  # リモート開発機との /Users/Shared/sync 同期 (bin/remote-sync)
 brew "xcodegen"      # kanatan / editan のビルドに必要
 # .zshrc が起動時に使うもの
 brew "rbenv"
