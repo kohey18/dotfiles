@@ -19,6 +19,8 @@ if [ "${SKIP_BREW:-0}" != "1" ]; then
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
     eval "$(/opt/homebrew/bin/brew shellenv)"
   fi
+  # Homebrew はサードパーティ tap の formula を信頼済みでないと入れない (mutagen 用)
+  brew trust mutagen-io/mutagen >/dev/null 2>&1 || true
   log "brew bundle (Brewfile)"
   brew bundle --file="${DOTFILES}/Brewfile"
 fi
@@ -61,6 +63,31 @@ link .config/ghostty/config     "${HOME_DIR}/.config/ghostty/config"
 link .claude/settings.json      "${HOME_DIR}/.claude/settings.json"
 link .claude/statusline.sh      "${HOME_DIR}/.claude/statusline.sh"
 link .codex/rules/default.rules "${HOME_DIR}/.codex/rules/default.rules"
+# 自作コマンド (.zshrc が ~/.local/bin を PATH に入れている)
+for f in "${DOTFILES}"/bin/*; do
+  [ -f "${f}" ] || continue
+  link "bin/${f##*/}" "${HOME_DIR}/.local/bin/${f##*/}"
+done
+
+# ---- リモート開発機との同期フォルダ (Mutagen) ----------------------------------
+# 両方の Mac に同じ絶対パスで置くので、Finder からドラッグしたパスがリモート側でもそのまま読める。
+# 同期セッションの作成は ssh が通る前提なので setup.sh ではやらず、`remote-sync setup` で行う。
+SYNC_DIR="/Users/Shared/sync"
+mkdir -p "${SYNC_DIR}"
+if [ ! -L "${SYNC_DIR}" ] && [ -O "${SYNC_DIR}" ]; then
+  chmod 700 "${SYNC_DIR}"
+  log "ok      ${SYNC_DIR}"
+else
+  log "WARN    ${SYNC_DIR} が symlink か自分の所有ではありません。確認してください"
+fi
+if command -v mutagen >/dev/null 2>&1; then
+  mutagen daemon register >/dev/null 2>&1 || true
+  if [ -f "${HOME_DIR}/Library/LaunchAgents/io.mutagen.mutagen.plist" ]; then
+    log "ok      mutagen daemon (login 自動起動)。同期の開始は: remote-sync setup"
+  else
+    log "WARN    mutagen daemon の自動起動登録に失敗しました: mutagen daemon register を直接実行してください"
+  fi
+fi
 
 # ---- tmux-powerline --------------------------------------------------------
 if [ ! -d "${HOME_DIR}/.tmux/tmux-powerline" ]; then
