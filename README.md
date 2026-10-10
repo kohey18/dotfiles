@@ -25,7 +25,7 @@ chsh -s "$(command -v zsh)"
 
 1. Homebrew が無ければインストールし、`brew shellenv` を `~/.zprofile` に追記
 2. `brew bundle` で [Brewfile](Brewfile) のパッケージを一括インストール
-   - zsh / tmux / reattach-to-user-namespace / jq / asdf / emacs / herdr / mutagen / git / xcodegen
+   - zsh / tmux / reattach-to-user-namespace / jq / asdf / emacs / herdr / mutagen / git / gh / xcodegen
    - `.zshrc` が使う rbenv / pyenv / volta / peco
    - `ghostty`（ターミナル）
    - `font-udev-gothic-nf`（ghostty / tmux / emacs で使う Nerd Font）
@@ -56,7 +56,7 @@ chsh -s "$(command -v zsh)"
 
 初回ログイン後に手動でやること:
 
-- `claude` と `codex` でログイン
+- `claude` と `codex` と `gh auth login` でログイン
 - Kanatan を起動してアクセシビリティ権限を許可
 
 ## 各ツールのメモ

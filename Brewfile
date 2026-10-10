@@ -1,5 +1,6 @@
 # brew bundle で一括インストール（setup.sh から呼ばれる）
 brew "git"
+brew "gh"            # GitHub CLI (PR 作成など。初回は gh auth login)
 brew "zsh"
 brew "tmux"
 brew "reattach-to-user-namespace"
